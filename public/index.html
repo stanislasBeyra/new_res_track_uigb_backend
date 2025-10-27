@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ResTrack - Système de Gestion de Résidence Étudiante</title>
+    
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- MDB 5 CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/7.1.0/mdb.min.css" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-color: #667eea;
+            --secondary-color: #764ba2;
+            --accent-color: #f093fb;
+        }
+        
+        body {
+            overflow-x: hidden;
+        }
+        
+        .hero-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 120px 0 80px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="rgba(255,255,255,0.1)" d="M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,122.7C672,117,768,139,864,138.7C960,139,1056,117,1152,112C1248,107,1344,117,1392,122.7L1440,128L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>') no-repeat bottom;
+            background-size: cover;
+            opacity: 0.3;
+        }
+        
+        .hero-content {
+            position: relative;
+            z-index: 2;
+        }
+        
+        .feature-card {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            height: 100%;
+            border-radius: 15px;
+            overflow: hidden;
+            background: white;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-15px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(102, 126, 234, 0.25) !important;
+        }
+        
+        .feature-card .card-body {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .feature-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(102, 126, 234, 0.1), transparent);
+            transition: left 0.6s ease;
+        }
+        
+        .feature-card:hover::after {
+            left: 100%;
+        }
+        
+        .icon-wrapper {
+            width: 90px;
+            height: 90px;
+            border-radius: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 25px;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+            transition: all 0.3s ease;
+        }
+        
+        .feature-card:hover .icon-wrapper {
+            transform: rotateY(360deg);
+            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.5);
+        }
+        
+        .icon-wrapper::before {
+            content: '';
+            position: absolute;
+            inset: -3px;
+            border-radius: 20px;
+            background: linear-gradient(135deg, var(--accent-color), var(--primary-color));
+            z-index: -1;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .feature-card:hover .icon-wrapper::before {
+            opacity: 1;
+        }
+        
+        .navbar {
+            backdrop-filter: blur(10px);
+            background-color: rgba(255, 255, 255, 0.95) !important;
+            transition: all 0.3s ease;
+        }
+        
+        .navbar.scrolled {
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+        
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.6rem;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .btn-gradient {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn-gradient::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.5s ease;
+        }
+        
+        .btn-gradient:hover::before {
+            left: 100%;
+        }
+        
+        .btn-gradient:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+        
+        .section-title {
+            position: relative;
+            display: inline-block;
+            padding-bottom: 15px;
+        }
+        
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            border-radius: 2px;
+        }
+        
+        .api-card {
+            border-radius: 15px;
+            transition: all 0.3s ease;
+        }
+        
+        .api-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+        }
+        
+        .list-check li {
+            position: relative;
+            padding-left: 30px;
+            margin-bottom: 12px;
+        }
+        
+        .list-check li i {
+            position: absolute;
+            left: 0;
+            top: 3px;
+        }
+        
+        footer {
+            background: linear-gradient(135deg, #1e1e2f 0%, #2d2d44 100%);
+        }
+        
+        footer a {
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+        
+        footer a:hover {
+            color: var(--accent-color) !important;
+            padding-left: 10px;
+        }
+        
+        .pulse-animation {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.7;
+            }
+        }
+        
+        .fade-in-up {
+            animation: fadeInUp 0.8s ease-out;
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* Smooth scroll */
+        html {
+            scroll-behavior: smooth;
+        }
+        
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 5px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, #764ba2, #667eea);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white fixed-top" id="mainNavbar">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-building me-2"></i>ResTrack
+            </a>
+            <button 
+                class="navbar-toggler" 
+                type="button" 
+                data-mdb-toggle="collapse" 
+                data-mdb-target="#navbarNav"
+                aria-controls="navbarNav"
+                aria-expanded="false"
+                aria-label="Toggle navigation">
+                <i class="fas fa-bars"></i>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto align-items-center">
+                    <li class="nav-item">
+                        <a class="nav-link fw-bold" href="#features">Fonctionnalités</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link fw-bold" href="#api">API</a>
+                    </li>
+                    <li class="nav-item ms-lg-3">
+                        <a class="nav-link btn btn-gradient text-white px-4 py-2" href="/docs">
+                            <i class="fas fa-book me-2"></i>Documentation
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section text-center">
+        <div class="container hero-content">
+            <div class="fade-in-up">
+                <div class="mb-4">
+                    <i class="fas fa-university fa-5x pulse-animation"></i>
+                </div>
+                <h1 class="display-2 fw-bold mb-4">
+                    ResTrack
+                </h1>
+                <p class="lead fs-3 mb-5 opacity-90">
+                    Système de gestion moderne et innovant pour résidences étudiantes
+                </p>
+                <div class="d-flex gap-3 justify-content-center flex-wrap">
+                    <a href="/docs" class="btn btn-light btn-lg shadow">
+                        <i class="fas fa-rocket me-2"></i>Commencer maintenant
+                    </a>
+                    <a href="#features" class="btn btn-outline-light btn-lg">
+                        <i class="fas fa-arrow-down me-2"></i>Découvrir plus
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="py-5 my-5">
+        <div class="container">
+            <div class="text-center mb-5">
+                <h2 class="section-title fw-bold display-5 mb-4">
+                    Fonctionnalités Principales
+                </h2>
+                <p class="text-muted fs-5">Des outils puissants pour une gestion optimale</p>
+            </div>
+            
+            <div class="row g-4">
+                <!-- Gestion des Sorties -->
+                <div class="col-md-6 col-lg-4">
+                    <div class="card feature-card shadow-3 border-0">
+                        <div class="card-body text-center p-4">
+                            <div class="icon-wrapper">
+                                <i class="fas fa-door-open text-white fa-3x"></i>
+                            </div>
+                            <h4 class="fw-bold mb-3 text-primary">Gestion des Sorties</h4>
+                            <p class="text-muted mb-4">
+                                Déclarez et suivez vos sorties en temps réel avec approbation automatique des administrateurs.
+                            </p>
+                            <ul class="list-unstyled list-check text-start">
+                                <li><i class="fas fa-check-circle text-success"></i>Déclaration en ligne rapide</li>
+                                <li><i class="fas fa-check-circle text-success"></i>Suivi en temps réel</li>
+                                <li><i class="fas fa-check-circle text-success"></i>Notifications automatiques</li>
+                                <li><i class="fas fa-check-circle text-success"></i>Historique complet</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Messagerie en Temps Réel -->
+                <div class="col-md-6 col-lg-4">
+                    <div class="card feature-card shadow-3 border-0">
+                        <div class="card-body text-center p-4">
+                            <div class="icon-wrapper">
+                                <i class="fas fa-comments text-white fa-3x"></i>
+                            </div>
+                            <h4 class="fw-bold mb-3 text-primary">Messagerie Instantanée</h4>
+                            <p class="text-muted mb-4">
+                                Chat en temps réel avec WebSocket pour une communication instantanée et fluide.
+                            </p>
+                            <ul class="list-unstyled list-check text-start">
+                                <li><i class="fas fa-check-circle text-success"></i>Messages instantanés</li>
+                                <li><i class="fas fa-check-circle text-success"></i>Groupes de discussion</li>
+                                <li><i class="fas fa-check-circle text-success"></i>Statut en ligne/hors ligne</li>
+                                <li><i class="fas fa-check-circle text-success"></i>Partage de fichiers</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Système d'Amis -->
+                <div class="col-md-6 col-lg-4">
+                    <div class="card feature-card shadow-3 border-0">
+                        <div class="card-body text-center p-4">
+                            <div class="icon-wrapper">
+                                <i class="fas fa-users text-white fa-3x"></i>
+                            </div>
+                            <h4 class="fw-bold mb-3 text-primary">Réseau Social</h4>
+                            <p class="text-muted mb-4">
+                                Créez votre réseau d'amis et restez connecté avec toute la communauté étudiante.
+                            </p>
+                            <ul class="list-unstyled list-check text-start">
+                                <li><i class="fas fa-check-circle text-success"></i>Demandes d'amis</li>
+                                <li><i class="fas fa-check-circle text-success"></i>Recherche avancée</li>
+                                <li><i class="fas fa-check-circle text-success"></i>Profils détaillés</li>
+                                <li><i class="fas fa-check-circle text-success"></i>Suggestions automatiques</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Dashboard Administrateur -->
+                <div class="col-md-6 col-lg-4">
+                    <div class="card feature-card shadow-3 border-0">
+                        <div class="card-body text-center p-4">
+                            <div class="icon-wrapper">
+                                <i class="fas fa-chart-line text-white fa-3x"></i>
+                            </div>
+                            <h4 class="fw-bold mb-3 text-primary">Dashboard Admin</h4>
+                            <p class="text-muted mb-4">
+                                Tableaux de bord et statistiques détaillées pour une gestion optimale de la résidence.
+                            </p>
+                            <ul class="list-unstyled list-check text-start">
+                                <li><i class="fas fa-check-circle text-success"></i>Statistiques en temps réel</li>
+                                <li><i class="fas fa-check-circle text-success"></i>Gestion des étudiants</li>
+                                <li><i class="fas fa-check-circle text-success"></i>Alertes intelligentes</li>
+                                <li><i class="fas fa-check-circle text-success"></i>Rapports automatiques</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Notifications -->
+                <div class="col-md-6 col-lg-4">
+                    <div class="card feature-card shadow-3 border-0">
+                        <div class="card-body text-center p-4">
+                            <div class="icon-wrapper">
+                                <i class="fas fa-bell text-white fa-3x"></i>
+                            </div>
+                            <h4 class="fw-bold mb-3 text-primary">Notifications Push</h4>
+                            <p class="text-muted mb-4">
+                                Recevez des notifications push en temps réel pour ne jamais manquer une information importante.
+                            </p>
+                            <ul class="list-unstyled list-check text-start">
+                                <li><i class="fas fa-check-circle text-success"></i>Notifications push</li>
+                                <li><i class="fas fa-check-circle text-success"></i>Alertes d'urgence</li>
+                                <li><i class="fas fa-check-circle text-success"></i>Centre de notifications</li>
+                                <li><i class="fas fa-check-circle text-success"></i>Personnalisables</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Gestion de Profil -->
+                <div class="col-md-6 col-lg-4">
+                    <div class="card feature-card shadow-3 border-0">
+                        <div class="card-body text-center p-4">
+                            <div class="icon-wrapper">
+                                <i class="fas fa-user-circle text-white fa-3x"></i>
+                            </div>
+                            <h4 class="fw-bold mb-3 text-primary">Profil Étudiant</h4>
+                            <p class="text-muted mb-4">
+                                Gérez facilement votre profil, votre chambre et toutes vos informations personnelles.
+                            </p>
+                            <ul class="list-unstyled list-check text-start">
+                                <li><i class="fas fa-check-circle text-success"></i>Édition simplifiée</li>
+                                <li><i class="fas fa-check-circle text-success"></i>Photo de profil</li>
+                                <li><i class="fas fa-check-circle text-success"></i>Infos académiques</li>
+                                <li><i class="fas fa-check-circle text-success"></i>Sécurité renforcée</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- API Section -->
+    <section id="api" class="py-5 bg-light">
+        <div class="container">
+            <div class="text-center mb-5">
+                <h2 class="section-title fw-bold display-5 mb-4">
+                    Documentation API
+                </h2>
+                <p class="text-muted fs-5">API REST moderne et WebSocket en temps réel</p>
+            </div>
+            
+            <div class="row g-4">
+                <div class="col-md-6">
+                    <div class="card api-card border-0 shadow-3 h-100">
+                        <div class="card-body p-5">
+                            <div class="mb-4">
+                                <div class="d-inline-block p-3 bg-primary bg-opacity-10 rounded-3">
+                                    <i class="fas fa-rocket text-primary fa-3x"></i>
+                                </div>
+                            </div>
+                            <h4 class="fw-bold mb-3">
+                                API REST Sécurisée
+                            </h4>
+                            <p class="text-muted mb-4">
+                                Accédez à toutes les fonctionnalités via notre API REST moderne et sécurisée avec documentation interactive.
+                            </p>
+                            <ul class="list-unstyled list-check mb-4">
+                                <li>
+                                    <i class="fas fa-shield-alt text-primary"></i>
+                                    Authentification JWT sécurisée
+                                </li>
+                                <li>
+                                    <i class="fas fa-file-code text-primary"></i>
+                                    Documentation Swagger interactive
+                                </li>
+                                <li>
+                                    <i class="fas fa-check-double text-primary"></i>
+                                    Validation automatique des données
+                                </li>
+                                <li>
+                                    <i class="fas fa-layer-group text-primary"></i>
+                                    Architecture RESTful
+                                </li>
+                            </ul>
+                            <a href="/docs" class="btn btn-gradient text-white btn-lg">
+                                <i class="fas fa-external-link-alt me-2"></i>Accéder à Swagger
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="card api-card border-0 shadow-3 h-100">
+                        <div class="card-body p-5">
+                            <div class="mb-4">
+                                <div class="d-inline-block p-3 bg-success bg-opacity-10 rounded-3">
+                                    <i class="fas fa-plug text-success fa-3x"></i>
+                                </div>
+                            </div>
+                            <h4 class="fw-bold mb-3">
+                                WebSocket Real-Time
+                            </h4>
+                            <p class="text-muted mb-4">
+                                Communication bidirectionnelle en temps réel avec support WebSocket pour une expérience utilisateur optimale.
+                            </p>
+                            <ul class="list-unstyled list-check mb-4">
+                                <li>
+                                    <i class="fas fa-comments text-success"></i>
+                                    Chat instantané en temps réel
+                                </li>
+                                <li>
+                                    <i class="fas fa-bell text-success"></i>
+                                    Notifications push instantanées
+                                </li>
+                                <li>
+                                    <i class="fas fa-circle text-success"></i>
+                                    Statut en ligne/hors ligne
+                                </li>
+                                <li>
+                                    <i class="fas fa-sync-alt text-success"></i>
+                                    Synchronisation automatique
+                                </li>
+                            </ul>
+                            <a href="/health" class="btn btn-outline-success btn-lg">
+                                <i class="fas fa-heartbeat me-2"></i>Health Check API
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Technologies Section -->
+            <div class="row mt-5">
+                <div class="col-12">
+                    <div class="card border-0 shadow-3">
+                        <div class="card-body p-5 text-center">
+                            <h4 class="fw-bold mb-4">Technologies Utilisées</h4>
+                            <div class="d-flex flex-wrap justify-content-center gap-4">
+                                <div class="tech-badge">
+                                    <i class="fab fa-node-js fa-3x text-success mb-2"></i>
+                                    <p class="mb-0 fw-bold">Node.js</p>
+                                </div>
+                                <div class="tech-badge">
+                                    <i class="fas fa-code fa-3x text-primary mb-2"></i>
+                                    <p class="mb-0 fw-bold">TypeScript</p>
+                                </div>
+                                <div class="tech-badge">
+                                    <i class="fas fa-database fa-3x text-info mb-2"></i>
+                                    <p class="mb-0 fw-bold">PostgreSQL</p>
+                                </div>
+                                <div class="tech-badge">
+                                    <i class="fas fa-cube fa-3x text-danger mb-2"></i>
+                                    <p class="mb-0 fw-bold">NestJS</p>
+                                </div>
+                                <div class="tech-badge">
+                                    <i class="fas fa-network-wired fa-3x text-warning mb-2"></i>
+                                    <p class="mb-0 fw-bold">WebSocket</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="text-white py-5">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <h5 class="fw-bold mb-4">
+                        <i class="fas fa-university me-2"></i>ResTrack
+                    </h5>
+                    <p class="opacity-75 mb-3">
+                        Système de gestion moderne et innovant pour résidences étudiantes. Simplifiez la gestion quotidienne avec des outils puissants.
+                    </p>
+                    <div class="d-flex gap-3 mt-4">
+                        <a href="#" class="btn btn-outline-light btn-floating">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="#" class="btn btn-outline-light btn-floating">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="#" class="btn btn-outline-light btn-floating">
+                            <i class="fab fa-linkedin-in"></i>
+                        </a>
+                        <a href="#" class="btn btn-outline-light btn-floating">
+                            <i class="fab fa-github"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="col-md-4">
+                    <h5 class="fw-bold mb-4">Liens Rapides</h5>
+                    <ul class="list-unstyled">
+                        <li class="mb-3">
+                            <a href="#features" class="text-white opacity-75">
+                                <i class="fas fa-chevron-right me-2"></i>Fonctionnalités
+                            </a>
+                        </li>
+                        <li class="mb-3">
+                            <a href="#api" class="text-white opacity-75">
+                                <i class="fas fa-chevron-right me-2"></i>Documentation API
+                            </a>
+                        </li>
+                        <li class="mb-3">
+                            <a href="/docs" class="text-white opacity-75">
+                                <i class="fas fa-chevron-right me-2"></i>Swagger UI
+                            </a>
+                        </li>
+                        <li class="mb-3">
+                            <a href="/health" class="text-white opacity-75">
+                                <i class="fas fa-chevron-right me-2"></i>Health Check
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="col-md-4">
+                    <h5 class="fw-bold mb-4">Technologies</h5>
+                    <div class="mb-3">
+                        <p class="mb-2 opacity-75">
+                            <i class="fas fa-code me-2 text-info"></i>
+                            Backend: NestJS + TypeScript
+                        </p>
+                        <p class="mb-2 opacity-75">
+                            <i class="fas fa-database me-2 text-success"></i>
+                            Base de données: PostgreSQL
+                        </p>
+                        <p class="mb-2 opacity-75">
+                            <i class="fas fa-network-wired me-2 text-warning"></i>
+                            Communication: WebSocket
+                        </p>
+                        <p class="mb-2 opacity-75">
+                            <i class="fas fa-shield-alt me-2 text-danger"></i>
+                            Sécurité: JWT Authentication
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <hr class="my-4 opacity-25">
+            
+            <div class="row">
+                <div class="col-md-6 text-center text-md-start">
+                    <p class="mb-0 opacity-75">
+                        <i class="far fa-copyright me-1"></i>
+                        2025 ResTrack. Tous droits réservés.
+                    </p>
+                </div>
+                <div class="col-md-6 text-center text-md-end">
+                    <p class="mb-0 opacity-75">
+                        Développé avec <i class="fas fa-heart text-danger"></i> par l'équipe ResTrack
+                    </p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- MDB 5 JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/7.1.0/mdb.min.js"></script>
+    
+    <!-- Custom JavaScript -->
+    <script>
+        $(document).ready(function() {
+            // Navbar scroll effect
+            $(window).scroll(function() {
+                if ($(this).scrollTop() > 50) {
+                    $('#mainNavbar').addClass('scrolled');
+                } else {
+                    $('#mainNavbar').removeClass('scrolled');
+                }
+            });
+            
+            // Smooth scroll for anchor links
+            $('a[href^="#"]').on('click', function(event) {
+                var target = $(this.getAttribute('href'));
+                if(target.length) {
+                    event.preventDefault();
+                    $('html, body').stop().animate({
+                        scrollTop: target.offset().top - 80
+                    }, 1000);
+                }
+            });
+            
+            // Animate elements on scroll
+            function animateOnScroll() {
+                $('.feature-card').each(function() {
+                    var elementTop = $(this).offset().top;
+                    var elementBottom = elementTop + $(this).outerHeight();
+                    var viewportTop = $(window).scrollTop();
+                    var viewportBottom = viewportTop + $(window).height();
+                    
+                    if (elementBottom > viewportTop && elementTop < viewportBottom) {
+                        $(this).addClass('fade-in-up');
+                    }
+                });
+            }
+            
+            $(window).on('scroll', animateOnScroll);
+            animateOnScroll(); // Initial check
+            
+            // Add ripple effect to buttons
+            $('.btn').on('click', function(e) {
+                var ripple = $('<span class="ripple"></span>');
+                var x = e.pageX - $(this).offset().left;
+                var y = e.pageY - $(this).offset().top;
+                
+                ripple.css({
+                    left: x,
+                    top: y
+                });
+                
+                $(this).append(ripple);
+                
+                setTimeout(function() {
+                    ripple.remove();
+                }, 600);
+            });
+        });
+    </script>
+</body>
+</html>
