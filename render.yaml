@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: restrack-backend
+    env: node
+    buildCommand: npm install && npm run build
+    startCommand: npm run start:prod
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3006
+      - key: DB_TYPE
+        value: postgres
+      - key: SWAGGER_ENABLED
+        value: true
+

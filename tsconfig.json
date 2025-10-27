@@ -5,8 +5,10 @@
     "removeComments": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
+    "useDefineForClassFields": false,
     "allowSyntheticDefaultImports": true,
-    "target": "ES2023",
+    "target": "ES2021",
+    "lib": ["ES2021"],
     "sourceMap": true,
     "outDir": "./dist",
     "baseUrl": "./",
@@ -17,5 +19,7 @@
     "noImplicitAny": false,
     "strictBindCallApply": false,
     "noFallthroughCasesInSwitch": false
-  }
+  },
+  "include": ["src/**/*", "api/**/*"],
+  "exclude": ["node_modules", "test", "dist"]
 }
