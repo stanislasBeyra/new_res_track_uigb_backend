@@ -4,6 +4,9 @@ import { Message, MulticastMessage } from 'firebase-admin/messaging';
 import * as path from 'path';
 import { join } from 'path';
 
+// Configuration pour désactiver les notifications push
+const PUSH_NOTIFICATIONS_ENABLED = process.env.PUSH_NOTIFICATIONS_ENABLED === 'true';
+
 export interface NotificationPayload {
   title: string;
   body: string;
@@ -34,6 +37,13 @@ export class FcmService implements OnModuleInit {
   // }
 
   onModuleInit() {
+    if (!PUSH_NOTIFICATIONS_ENABLED) {
+      this.logger.log('⚠️ PUSH_NOTIFICATIONS_ENABLED=false - Firebase Admin SDK initialization skipped');
+      return;
+    }
+    
+    // Code pour activer les notifications push
+    /*
     try {
       // Chemin absolu depuis la racine du projet
       const serviceAccountPath = join(
@@ -53,6 +63,7 @@ export class FcmService implements OnModuleInit {
       this.logger.error('❌ Failed to initialize Firebase Admin SDK');
       this.logger.error(error);
     }
+    */
   }
 
   /**
@@ -62,6 +73,12 @@ export class FcmService implements OnModuleInit {
     token: string,
     notification: NotificationPayload,
   ): Promise<string> {
+    if (!PUSH_NOTIFICATIONS_ENABLED) {
+      this.logger.debug(`🔕 Push notification skipped (DISABLED): ${notification.title} - ${notification.body}`);
+      return 'notification-disabled';
+    }
+    
+    // Code pour envoyer la notification
     const message: Message = {
       token,
       notification: {
@@ -112,6 +129,15 @@ export class FcmService implements OnModuleInit {
     tokens: string[],
     notification: NotificationPayload,
   ): Promise<admin.messaging.BatchResponse> {
+    if (!PUSH_NOTIFICATIONS_ENABLED) {
+      this.logger.debug(`🔕 Push notifications (${tokens.length} tokens) skipped (DISABLED): ${notification.title}`);
+      return {
+        successCount: 0,
+        failureCount: 0,
+        responses: [],
+      };
+    }
+    
     if (tokens.length === 0) {
       this.logger.warn('⚠️ No tokens provided for multicast message');
       return {
