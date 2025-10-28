@@ -14,9 +14,7 @@ import { WebsocketService } from './websocket.service';
 
 @WebSocketGateway({
   cors: {
-    origin: process.env.NODE_ENV === 'production' 
-      ? ['https://campustrack-lake.vercel.app']
-      : ['http://localhost:3000', 'http://192.168.100.5:3000'],
+    origin: '*', // Autoriser toutes les origines temporairement pour debug
     credentials: true,
   },
   namespace: '/chat',
