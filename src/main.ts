@@ -48,7 +48,7 @@ async function bootstrap() {
   app.enableCors({
     origin:
       process.env.NODE_ENV === 'production'
-        ? ['https://votre-domaine.com','http://localhost:3000','http://192.168.100.5:3000']
+        ? ['https://campustrack-lake.vercel.app','http://localhost:3000','http://192.168.100.5:3000']
         : '*',
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     credentials: true,
