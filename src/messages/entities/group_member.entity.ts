@@ -10,6 +10,7 @@ import {
   Index,
 } from 'typeorm';
 import { Group } from './goup.entity';
+import { User } from '../../users/entities/user.entity';
 
 // ============= ENUMS =============
 export enum SenderType {
@@ -65,4 +66,8 @@ export class GroupMember {
   @ManyToOne(() => Group, (group) => group.members, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'group_id' })
   group: Group;
+
+  @ManyToOne(() => User, { eager: false, nullable: true })
+  @JoinColumn({ name: 'user_id' })
+  user: User;
 }

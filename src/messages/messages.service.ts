@@ -420,7 +420,7 @@ export class MessagesService {
   async getGroup(groupId: number): Promise<Group> {
     const group = await this.groupRepository.findOne({
       where: { id: groupId },
-      relations: ['members'],
+      relations: ['members', 'members.user'],
     });
 
     if (!group) {
@@ -433,7 +433,7 @@ export class MessagesService {
   async getUserGroups(userId: number, userType: SenderType): Promise<Group[]> {
     const members = await this.groupMemberRepository.find({
       where: { userId, userType },
-      relations: ['group', 'group.members'],
+      relations: ['group', 'group.members', 'group.members.user'],
     });
 
     const groups = members.map(member => member.group);
