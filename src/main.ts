@@ -55,6 +55,19 @@ async function bootstrap() {
     allowedHeaders: '*',
   });
 
+  // Configuration CORS pour Socket.IO
+  const allowedOrigins = process.env.NODE_ENV === 'production'
+    ? ['https://campustrack-lake.vercel.app','http://localhost:3000','http://192.168.100.5:3000']
+    : ['http://localhost:3000', 'http://192.168.100.5:3000','https://campustrack-lake.vercel.app'];
+  
+  app.getHttpServer().on('upgrade', (request, socket, head) => {
+    const origin = request.headers.origin;
+    if (!origin || !allowedOrigins.some(allowed => origin.includes(allowed))) {
+      socket.destroy();
+      return;
+    }
+  });
+
   app.setGlobalPrefix('api', {
     exclude: ['/', 'health', 'metrics', 'docs', 'upload'], // Ces routes n'auront pas le prefix
   });
