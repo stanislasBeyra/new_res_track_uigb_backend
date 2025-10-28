@@ -87,7 +87,6 @@ export class ExitsService {
       }
     } catch (error) {
       console.error('❌ Error creating notifications:', error.message);
-      // Don't block exit creation even if notification fails
     }
 
     return fullExit;
