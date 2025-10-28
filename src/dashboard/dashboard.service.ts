@@ -18,25 +18,25 @@ export class DashboardService {
   ) {}
 
   async getDashboardData(): Promise<DashboardDataDto> {
-    // Récupérer tous les étudiants (utilisateurs avec role STUDENT)
+    // Get all students (users with role STUDENT)
     const students = await this.userRepository.find({
       where: { role: UserRole.STUDENT },
       relations: ['exits'],
     });
 
-    // Récupérer toutes les sorties avec les relations étudiant
+    // Get all exits with student relations
     const exits = await this.exitRepository.find({
       relations: ['student'],
       order: { createdAt: 'DESC' },
     });
 
-    // Calculer les statistiques
+    // Calculate statistics
     const stats = this.calculateStats(students, exits);
 
-    // Générer l'activité récente
+    // Generate recent activity
     const recentActivity = this.generateRecentActivity(exits, students);
 
-    // Récupérer les 5 dernières sorties
+    // Get the last 5 exits
     const recentExits = exits.slice(0, 5);
 
     return {
@@ -47,12 +47,12 @@ export class DashboardService {
   }
 
   private calculateStats(students: User[], exits: Exit[]): DashboardStatsDto {
-    // Statistiques des étudiants
+    // Student statistics
     const totalStudents = students.length;
     const studentsPresent = students.filter(s => s.status === UserStatus.PRESENT).length;
     const studentsOnExit = students.filter(s => s.status === UserStatus.SORTIE).length;
 
-    // Statistiques des sorties
+    // Exit statistics
     const totalExits = exits.length;
     const exitsInProgress = exits.filter(e => e.status === ExitStatus.EN_COURS).length;
     const exitsCompleted = exits.filter(e => e.status === ExitStatus.TERMINEE).length;
@@ -61,7 +61,7 @@ export class DashboardService {
     // Calculer le taux d'occupation
     const occupancyRate = totalStudents > 0 ? Math.round((studentsPresent / totalStudents) * 100) : 0;
 
-    // Calculer les problèmes en attente
+    // Calculate pending issues
     const pendingIssues = exitsLate + exits.filter(e => e.status === ExitStatus.EN_COURS).length;
 
     return {
@@ -80,33 +80,33 @@ export class DashboardService {
   private generateRecentActivity(exits: Exit[], students: User[]): RecentActivityDto[] {
     const activities: RecentActivityDto[] = [];
 
-    // Activités basées sur les sorties récentes (5 dernières)
+    // Activities based on recent exits (last 5)
     exits.slice(0, 5).forEach(exit => {
       if (exit.status === ExitStatus.EN_COURS) {
         activities.push({
           type: 'exit',
-          message: `${exit.student?.firstName} ${exit.student?.lastName} est en sortie`,
+          message: `${exit.student?.firstName} ${exit.student?.lastName} is on exit`,
           color: 'blue',
           timestamp: exit.createdAt?.toISOString() || new Date(exit.departureDate).toISOString(),
         });
       } else if (exit.status === ExitStatus.TERMINEE) {
         activities.push({
           type: 'return',
-          message: `${exit.student?.firstName} ${exit.student?.lastName} est revenu de sortie`,
+          message: `${exit.student?.firstName} ${exit.student?.lastName} returned from exit`,
           color: 'green',
           timestamp: exit.actualReturnDate ? new Date(exit.actualReturnDate).toISOString() : exit.updatedAt?.toISOString() || exit.createdAt?.toISOString(),
         });
       } else if (exit.status === ExitStatus.EN_RETARD) {
         activities.push({
           type: 'late',
-          message: `${exit.student?.firstName} ${exit.student?.lastName} est en retard`,
+          message: `${exit.student?.firstName} ${exit.student?.lastName} is late`,
           color: 'orange',
           timestamp: exit.actualReturnDate ? new Date(exit.actualReturnDate).toISOString() : exit.updatedAt?.toISOString() || exit.createdAt?.toISOString(),
         });
       }
     });
 
-    // Ajouter des activités basées sur les nouveaux étudiants (dernière semaine)
+    // Add activities based on new students (last week)
     const oneWeekAgo = new Date();
     oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
 
@@ -117,31 +117,31 @@ export class DashboardService {
     newStudents.forEach(student => {
       activities.push({
         type: 'new',
-        message: `Nouvel étudiant enregistré: ${student.firstName} ${student.lastName}`,
+        message: `New student registered: ${student.firstName} ${student.lastName}`,
         color: 'green',
         timestamp: student.createdAt?.toISOString() || new Date().toISOString(),
       });
     });
 
-    // Trier par timestamp et retourner les 5 plus récentes
+    // Sort by timestamp and return the 5 most recent
     return activities
       .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
       .slice(0, 5);
   }
 
   async getExitsTrends(): Promise<ExitsTrendsDto> {
-    // Récupérer toutes les sorties
+    // Get all exits
     const exits = await this.exitRepository.find({
       order: { createdAt: 'ASC' },
     });
 
-    // Calculer les tendances mensuelles (12 derniers mois)
+    // Calculate monthly trends (last 12 months)
     const monthly = this.calculateMonthlyTrends(exits);
 
-    // Calculer les tendances hebdomadaires (8 dernières semaines)
+    // Calculate weekly trends (last 8 weeks)
     const weekly = this.calculateWeeklyTrends(exits);
 
-    // Calculer les tendances annuelles (4 dernières années)
+    // Calculate yearly trends (last 4 years)
     const yearly = this.calculateYearlyTrends(exits);
 
     return {
@@ -153,14 +153,14 @@ export class DashboardService {
 
   private calculateMonthlyTrends(exits: Exit[]): ChartDataDto[] {
     const monthlyData: { [key: string]: number } = {};
-    const monthNames = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Jun', 'Jul', 'Aoû', 'Sep', 'Oct', 'Nov', 'Déc'];
+    const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
     
-    // Initialiser tous les mois à 0
+    // Initialize all months to 0
     monthNames.forEach(month => {
       monthlyData[month] = 0;
     });
 
-    // Compter les sorties par mois
+    // Count exits by month
     exits.forEach(exit => {
       const date = new Date(exit.createdAt || exit.departureDate);
       const monthIndex = date.getMonth();
@@ -177,7 +177,7 @@ export class DashboardService {
   private calculateWeeklyTrends(exits: Exit[]): ChartDataDto[] {
     const weeklyData: ChartDataDto[] = [];
     
-    // Calculer les 8 dernières semaines
+    // Calculate last 8 weeks
     for (let i = 7; i >= 0; i--) {
       const weekStart = new Date();
       weekStart.setDate(weekStart.getDate() - (i * 7));
@@ -190,7 +190,7 @@ export class DashboardService {
       });
 
       weeklyData.push({
-        name: `Sem ${8 - i}`,
+        name: `Week ${8 - i}`,
         sorties: weekExits.length,
       });
     }
@@ -201,14 +201,14 @@ export class DashboardService {
   private calculateYearlyTrends(exits: Exit[]): ChartDataDto[] {
     const yearlyData: { [key: string]: number } = {};
     
-    // Compter les sorties par année
+    // Count exits by year
     exits.forEach(exit => {
       const date = new Date(exit.createdAt || exit.departureDate);
       const year = date.getFullYear().toString();
       yearlyData[year] = (yearlyData[year] || 0) + 1;
     });
 
-    // Convertir en array et trier par année
+    // Convert to array and sort by year
     return Object.entries(yearlyData)
       .sort(([a], [b]) => parseInt(a) - parseInt(b))
       .map(([year, count]) => ({

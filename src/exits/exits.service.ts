@@ -32,14 +32,14 @@ export class ExitsService {
 
     const savedExit = await this.exitRepository.save(exit);
 
-    // Mettre à jour le statut de l'étudiant à "ON_EXIT"
+    // Update student status to "ON_EXIT"
     try {
       await this.usersService.update(studentId, { status: UserStatus.SORTIE });
     } catch (error) {
-      console.error('Erreur lors de la mise à jour du statut de l\'étudiant:', error);
+      console.error('Error updating student status:', error);
     }
 
-    // Charger les relations pour la notification
+    // Load relations for notification
     const fullExit = await this.exitRepository.findOne({
       where: { id: savedExit.id },
       relations: ['student'],
@@ -49,12 +49,12 @@ export class ExitsService {
       throw new Error('Exit not found after creation');
     }
 
-    // Notifier tous les admins en temps réel
+    // Notify all admins in real time
     try {
       const notifications = await this.notificationsService.notifyAllAdmins({
         type: NotificationType.EXIT_CREATED,
-        title: 'Nouvelle demande de sortie',
-        message: `${fullExit.student.firstName} ${fullExit.student.lastName} a créé une demande de sortie vers ${fullExit.destination}`,
+        title: 'New exit request',
+        message: `${fullExit.student.firstName} ${fullExit.student.lastName} created an exit request to ${fullExit.destination}`,
         exitId: fullExit.id,
         metadata: {
           studentId: fullExit.studentId,
@@ -74,20 +74,20 @@ export class ExitsService {
         if (adminIds.length > 0) {
           await this.messagesService.sendPushNotificationToUsers(
             adminIds,
-            'ResTrack - Nouvelle Sortie',
-            `${fullExit.student.firstName} ${fullExit.student.lastName} a créé une demande de sortie vers ${fullExit.destination}`,
+            'ResTrack - New Exit',
+            `${fullExit.student.firstName} ${fullExit.student.lastName} created an exit request to ${fullExit.destination}`,
             'exit',
             fullExit.id.toString()
           );
-          console.log(`📱 Notification push envoyée à ${adminIds.length} administrateur(s)`);
+          console.log(`📱 Push notification sent to ${adminIds.length} administrator(s)`);
         }
       } catch (pushError) {
-        console.error('❌ Erreur lors de l\'envoi des notifications push:', pushError.message);
-        // On ne bloque pas la création de l'exit même si la notification push échoue
+        console.error('❌ Error sending push notifications:', pushError.message);
+        // Don't block exit creation even if push notification fails
       }
     } catch (error) {
-      console.error('❌ Erreur lors de la création des notifications:', error.message);
-      // On ne bloque pas la création de l'exit même si la notification échoue
+      console.error('❌ Error creating notifications:', error.message);
+      // Don't block exit creation even if notification fails
     }
 
     return fullExit;
@@ -113,7 +113,7 @@ export class ExitsService {
       .where('exit.studentId = :studentId', { studentId })
       .orderBy('exit.createdAt', 'DESC');
 
-    // Ajouter les filtres de date si fournis
+    // Add date filters if provided
     if (startDate) {
       queryBuilder.andWhere('exit.departureDate >= :startDate', { 
         startDate: new Date(startDate) 
@@ -126,10 +126,10 @@ export class ExitsService {
       });
     }
 
-    // Compter le total
+    // Count total
     const total = await queryBuilder.getCount();
 
-    // Appliquer la pagination
+    // Apply pagination
     const exits = await queryBuilder
       .skip((page - 1) * limit)
       .take(limit)
@@ -177,7 +177,7 @@ export class ExitsService {
   async update(id: number, updateExitDto: UpdateExitDto): Promise<Exit> {
     const exit = await this.findOne(id);
 
-    // Mettre à jour les champs
+    // Update fields
     if (updateExitDto.reason) exit.reason = updateExitDto.reason;
     if (updateExitDto.destination) exit.destination = updateExitDto.destination;
     if (updateExitDto.description !== undefined) exit.description = updateExitDto.description;
@@ -189,7 +189,7 @@ export class ExitsService {
       exit.expectedReturnDate = new Date(updateExitDto.expectedReturnDate);
     }
 
-    // Mettre à jour le statut automatiquement
+    // Update status automatically
     exit.updateStatus();
 
     return await this.exitRepository.save(exit);
@@ -203,21 +203,21 @@ export class ExitsService {
 
     const updatedExit = await this.exitRepository.save(exit);
 
-    // Remettre le statut de l'étudiant à "PRESENT"
+    // Reset student status to "PRESENT"
     try {
       await this.usersService.update(exit.studentId, { status: UserStatus.PRESENT });
     } catch (error) {
-      console.error('Erreur lors de la mise à jour du statut de l\'étudiant:', error);
+      console.error('Error updating student status:', error);
     }
 
-    // Notifier l'étudiant du retour enregistré
+    // Notify student of recorded return
     await this.notificationsService.createAndNotify({
       userId: exit.studentId,
       type: exit.delayDays > 0 ? NotificationType.EXIT_LATE : NotificationType.EXIT_RETURN,
-      title: exit.delayDays > 0 ? 'Retour en retard enregistré' : 'Retour enregistré',
+      title: exit.delayDays > 0 ? 'Late return recorded' : 'Return recorded',
       message: exit.delayDays > 0
-        ? `Votre retour a été enregistré avec ${exit.delayDays} jour(s) de retard`
-        : 'Votre retour a été enregistré avec succès',
+        ? `Your return has been recorded with ${exit.delayDays} day(s) delay`
+        : 'Your return has been recorded successfully',
       exitId: exit.id,
       metadata: {
         actualReturnDate: exit.actualReturnDate,
