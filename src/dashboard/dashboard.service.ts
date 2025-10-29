@@ -6,7 +6,7 @@ import { Exit } from '../exits/entities/exit.entity';
 import { UserStatus } from '../enum/userstatus';
 import { ExitStatus } from '../enum/entry_exit_status';
 import { UserRole } from '../enum/userrole';
-import { DashboardStatsDto, RecentActivityDto, DashboardDataDto, ChartDataDto, ExitsTrendsDto } from './dto/dashboard.dto';
+import { DashboardStatsDto, RecentActivityDto, DashboardDataDto, ChartDataDto, ExitsTrendsDto, ReportsDto, ExitsByReasonDto } from './dto/dashboard.dto';
 
 @Injectable()
 export class DashboardService {
@@ -215,5 +215,121 @@ export class DashboardService {
         name: year,
         sorties: count,
       }));
+  }
+
+  async getReports(): Promise<ReportsDto> {
+    const now = new Date();
+    const firstDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+    
+    // Get all exits
+    const allExits = await this.exitRepository.find({
+      relations: ['student'],
+    });
+
+    // Filter exits from this month
+    const exitsThisMonth = allExits.filter(exit => {
+      const exitDate = new Date(exit.createdAt || exit.departureDate);
+      return exitDate >= firstDayOfMonth;
+    });
+
+    // Calculate total exits this month
+    const totalExitsThisMonth = exitsThisMonth.length;
+
+    // Calculate average exit duration
+    const completedExits = allExits.filter(exit => exit.actualReturnDate);
+    let totalDurationDays = 0;
+    completedExits.forEach(exit => {
+      if (exit.actualReturnDate) {
+        const departure = new Date(exit.departureDate);
+        const returnDate = new Date(exit.actualReturnDate);
+        const diffTime = returnDate.getTime() - departure.getTime();
+        const diffDays = diffTime / (1000 * 60 * 60 * 24);
+        totalDurationDays += diffDays;
+      }
+    });
+    const avgExitDuration = completedExits.length > 0 
+      ? Math.round((totalDurationDays / completedExits.length) * 10) / 10 
+      : 0;
+
+    // Find most visited destination
+    const destinationCount: { [key: string]: number } = {};
+    allExits.forEach(exit => {
+      const dest = exit.destination || 'Unknown';
+      destinationCount[dest] = (destinationCount[dest] || 0) + 1;
+    });
+    
+    const mostVisitedDestination = Object.keys(destinationCount).length > 0
+      ? Object.entries(destinationCount).sort(([, a], [, b]) => b - a)[0][0]
+      : 'N/A';
+
+    // Calculate exits by reason
+    const reasonCount: { [key: string]: number } = {};
+    allExits.forEach(exit => {
+      const reason = exit.reason || 'Unknown';
+      reasonCount[reason] = (reasonCount[reason] || 0) + 1;
+    });
+
+    const exitsByReason: ExitsByReasonDto[] = Object.entries(reasonCount)
+      .map(([reason, count]) => ({
+        reason,
+        count,
+      }))
+      .sort((a, b) => b.count - a.count);
+
+    // Get exits over time (last 12 months)
+    const twelveMonthsAgo = new Date();
+    twelveMonthsAgo.setMonth(twelveMonthsAgo.getMonth() - 12);
+    
+    const recentExits = allExits.filter(exit => {
+      const exitDate = new Date(exit.createdAt || exit.departureDate);
+      return exitDate >= twelveMonthsAgo;
+    });
+
+    const exitsOverTime = this.calculateMonthlyTrendsForReports(recentExits);
+
+    return {
+      totalExitsThisMonth,
+      avgExitDuration,
+      mostVisitedDestination,
+      exitsByReason,
+      exitsOverTime,
+    };
+  }
+
+  private calculateMonthlyTrendsForReports(exits: Exit[]): ChartDataDto[] {
+    const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const monthlyData: { [key: string]: number } = {};
+    
+    // Initialize last 12 months
+    const now = new Date();
+    for (let i = 11; i >= 0; i--) {
+      const date = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      const monthKey = `${date.getFullYear()}-${date.getMonth()}`;
+      monthlyData[monthKey] = 0;
+    }
+
+    // Count exits by month
+    exits.forEach(exit => {
+      const date = new Date(exit.createdAt || exit.departureDate);
+      const monthKey = `${date.getFullYear()}-${date.getMonth()}`;
+      if (monthlyData.hasOwnProperty(monthKey)) {
+        monthlyData[monthKey]++;
+      }
+    });
+
+    // Convert to array format
+    const nowYear = now.getFullYear();
+    const nowMonth = now.getMonth();
+    
+    return Array.from({ length: 12 }, (_, i) => {
+      const targetDate = new Date(nowYear, nowMonth - (11 - i), 1);
+      const monthKey = `${targetDate.getFullYear()}-${targetDate.getMonth()}`;
+      const monthLabel = `${monthNames[targetDate.getMonth()]} ${targetDate.getFullYear()}`;
+      
+      return {
+        name: monthLabel,
+        sorties: monthlyData[monthKey] || 0,
+      };
+    });
   }
 }

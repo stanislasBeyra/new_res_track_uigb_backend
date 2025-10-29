@@ -1,9 +1,10 @@
 import { Controller, Get, UseGuards } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { DashboardService } from './dashboard.service';
-import { DashboardDataDto, ExitsTrendsDto } from './dto/dashboard.dto';
+import { DashboardDataDto, ExitsTrendsDto, ReportsDto } from './dto/dashboard.dto';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { UserRole } from '../enum/userrole';
+import { Public } from 'src/common/decorators/public.decorator';
 
 @ApiTags('Dashboard')
 @Controller('dashboard')
@@ -60,5 +61,20 @@ export class DashboardController {
   })
   async getExitsTrends(): Promise<ExitsTrendsDto> {
     return await this.dashboardService.getExitsTrends();
+  }
+
+  @Get('reports')
+  @Public()
+  @ApiOperation({ 
+    summary: 'Get reports and analytics data',
+    description: 'Retrieve reports data including exits statistics, average duration, most visited destinations, and exits by reason'
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Reports data retrieved successfully',
+    type: ReportsDto,
+  })
+  async getReports(): Promise<ReportsDto> {
+    return await this.dashboardService.getReports();
   }
 }

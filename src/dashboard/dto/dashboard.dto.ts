@@ -136,3 +136,49 @@ export class ExitsTrendsDto {
   })
   yearly: ChartDataDto[];
 }
+
+export class ExitsByReasonDto {
+  @ApiProperty({
+    description: 'Exit reason',
+    example: 'Medical',
+  })
+  reason: string;
+
+  @ApiProperty({
+    description: 'Number of exits for this reason',
+    example: 25,
+  })
+  count: number;
+}
+
+export class ReportsDto {
+  @ApiProperty({
+    description: 'Total exits this month',
+    example: 345,
+  })
+  totalExitsThisMonth: number;
+
+  @ApiProperty({
+    description: 'Average exit duration in days',
+    example: 2.5,
+  })
+  avgExitDuration: number;
+
+  @ApiProperty({
+    description: 'Most visited destination',
+    example: 'New York',
+  })
+  mostVisitedDestination: string;
+
+  @ApiProperty({
+    description: 'Exits grouped by reason',
+    type: [ExitsByReasonDto],
+  })
+  exitsByReason: ExitsByReasonDto[];
+
+  @ApiProperty({
+    description: 'Exits over time (monthly data for the last 12 months)',
+    type: [ChartDataDto],
+  })
+  exitsOverTime: ChartDataDto[];
+}
