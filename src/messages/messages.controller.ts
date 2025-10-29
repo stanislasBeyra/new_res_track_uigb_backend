@@ -269,4 +269,13 @@ export class MessagesController {
   ): Promise<void> {
     return this.messagesService.removeFriend(id, req.user.id);
   }
+
+  // ============= ADMIN SPECIFIC =============
+
+  @Get('admin/students')
+  @ApiOperation({ summary: 'Get all students (Admin only - for starting conversations)' })
+  @ApiResponse({ status: 200, description: 'List of students' })
+  async getStudentsForAdmin(@Request() req): Promise<any[]> {
+    return this.messagesService.getStudentsForAdmin(req.user.id, req.user.role);
+  }
 }

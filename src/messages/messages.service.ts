@@ -738,4 +738,36 @@ export class MessagesService {
       this.logger.error(`❌ Erreur lors de l'envoi de la notification push:`, error);
     }
   }
+
+  // ============= ADMIN SPECIFIC =============
+
+  async getStudentsForAdmin(adminId: number, adminRole: SenderType): Promise<any[]> {
+    // Only admins can access this
+    if (adminRole !== SenderType.ADMIN) {
+      throw new ForbiddenException('Only admins can access this endpoint');
+    }
+
+    this.logger.debug(`👮 Admin ${adminId} requested list of students for messaging`);
+
+    const students = await this.userRepository.find({
+      where: { role: 'STUDENT' as any },
+      select: ['id', 'firstName', 'lastName', 'email', 'profilePicture', 'status', 'studentId', 'level', 'roomNumber'],
+      order: { firstName: 'ASC', lastName: 'ASC' },
+    });
+
+    this.logger.log(`👥 ${students.length} student(s) found for admin ${adminId}`);
+
+    return students.map(student => ({
+      id: student.id,
+      firstName: student.firstName,
+      lastName: student.lastName,
+      fullName: `${student.firstName} ${student.lastName}`,
+      email: student.email,
+      profilePicture: student.profilePicture,
+      status: student.status,
+      studentId: student.studentId,
+      level: student.level,
+      roomNumber: student.roomNumber,
+    }));
+  }
 }
