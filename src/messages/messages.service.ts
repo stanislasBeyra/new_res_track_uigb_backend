@@ -94,42 +94,49 @@ export class MessagesService {
       this.logger.debug(`✅ Membre du groupe vérifié`);
     }
 
-    // Si message privé, vérifier la relation d'amitié (seulement pour les étudiants)
+    // Si message privé, vérifier la relation d'amitié (seulement pour étudiants vers étudiants)
+    // Les admins peuvent toujours recevoir/envoyer des messages sans amitié
     if (createMessageDto.receiverId && senderType === SenderType.STUDENT) {
       this.logger.debug(`🔍 Message privé vers utilisateur ${createMessageDto.receiverId}, type: ${createMessageDto.receiverType}`);
       
       // Vérifier qu'on ne s'envoie pas un message à soi-même (autorisé)
       if (senderId !== createMessageDto.receiverId) {
-        this.logger.debug(`👥 Vérification de la relation d'amitié entre ${senderId} et ${createMessageDto.receiverId}`);
-        
-        // Vérifier si les deux utilisateurs sont amis
-        const friendship = await this.friendRepository
-          .createQueryBuilder('friend')
-          .where(
-            '((friend.requesterId = :senderId AND friend.studentId = :receiverId) OR ' +
-            '(friend.requesterId = :receiverId AND friend.studentId = :senderId)) AND ' +
-            'friend.status = :status',
-            {
-              senderId,
-              receiverId: createMessageDto.receiverId,
-              status: FriendStatus.ACCEPTED,
-            }
-          )
-          .getOne();
+        // Si le destinataire est un admin, pas besoin de vérification d'amitié
+        if (createMessageDto.receiverType === ReceiverType.ADMIN) {
+          this.logger.debug(`👮 Message d'un étudiant vers un admin - Pas de vérification d'amitié requise`);
+        } else {
+          // Pour les messages étudiants vers étudiants, vérifier la relation d'amitié
+          this.logger.debug(`👥 Vérification de la relation d'amitié entre ${senderId} et ${createMessageDto.receiverId}`);
+          
+          // Vérifier si les deux utilisateurs sont amis
+          const friendship = await this.friendRepository
+            .createQueryBuilder('friend')
+            .where(
+              '((friend.requesterId = :senderId AND friend.studentId = :receiverId) OR ' +
+              '(friend.requesterId = :receiverId AND friend.studentId = :senderId)) AND ' +
+              'friend.status = :status',
+              {
+                senderId,
+                receiverId: createMessageDto.receiverId,
+                status: FriendStatus.ACCEPTED,
+              }
+            )
+            .getOne();
 
-        if (!friendship) {
-          this.logger.warn(`❌ Pas de relation d'amitié entre ${senderId} et ${createMessageDto.receiverId}`);
-          throw new ForbiddenException(
-            'Vous ne pouvez envoyer des messages qu\'à vos amis. Envoyez d\'abord une demande d\'ami.'
-          );
-        }
-        
-        this.logger.debug(`✅ Relation d'amitié vérifiée (ID: ${friendship.id})`);
+          if (!friendship) {
+            this.logger.warn(`❌ Pas de relation d'amitié entre ${senderId} et ${createMessageDto.receiverId}`);
+            throw new ForbiddenException(
+              'Vous ne pouvez envoyer des messages qu\'à vos amis. Envoyez d\'abord une demande d\'ami.'
+            );
+          }
+          
+          this.logger.debug(`✅ Relation d'amitié vérifiée (ID: ${friendship.id})`);
 
-        // Vérifier que la relation n'est pas bloquée
-        if (friendship.status === FriendStatus.BLOCKED) {
-          this.logger.warn(`🚫 Relation bloquée entre ${senderId} et ${createMessageDto.receiverId}`);
-          throw new ForbiddenException('Impossible d\'envoyer un message à cet utilisateur');
+          // Vérifier que la relation n'est pas bloquée
+          if (friendship.status === FriendStatus.BLOCKED) {
+            this.logger.warn(`🚫 Relation bloquée entre ${senderId} et ${createMessageDto.receiverId}`);
+            throw new ForbiddenException('Impossible d\'envoyer un message à cet utilisateur');
+          }
         }
       } else {
         this.logger.debug(`📝 Message à soi-même autorisé`);
