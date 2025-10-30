@@ -33,6 +33,16 @@ export class AuthResponseDto {
       firstName: 'Jean',
       lastName: 'Dupont',
       role: 'STUDENT',
+      profilePicture: 'upload/profile-123.png',
+      phone: '0705137055',
+      studentId: 'STU2024001',
+      level: 'Freshman',
+      roomNumber: 'A101',
+      status: 'PRESENT',
+      isActive: true,
+      createdAt: '2024-01-01T00:00:00.000Z',
+      updatedAt: '2024-01-01T00:00:00.000Z',
+      lastLogin: '2024-01-01T00:00:00.000Z',
     },
   })
   user: {
@@ -41,5 +51,15 @@ export class AuthResponseDto {
     firstName: string;
     lastName: string;
     role: string;
+    profilePicture?: string;
+    phone?: string;
+    studentId?: string;
+    level?: string;
+    roomNumber?: string;
+    status?: string;
+    isActive: boolean;
+    createdAt: Date;
+    updatedAt: Date;
+    lastLogin?: Date;
   };
 }

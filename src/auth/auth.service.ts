@@ -29,9 +29,27 @@ export class AuthService {
     ipAddress?: string,
     userAgent?: string,
   ): Promise<AuthResponseDto> {
-    // Trouver l'utilisateur avec le mot de passe
+    // Trouver l'utilisateur avec tous les champs nécessaires (y compris password pour la vérification)
     const user = await this.userRepository.findOne({
-      where: { email: loginDto.email }
+      where: { email: loginDto.email },
+      select: [
+        'id', 
+        'email', 
+        'password', 
+        'firstName', 
+        'lastName', 
+        'role', 
+        'isActive',
+        'profilePicture',
+        'phone',
+        'studentId',
+        'level',
+        'roomNumber',
+        'status',
+        'createdAt',
+        'updatedAt',
+        'lastLogin',
+      ],
     });
 
     if (!user) {
@@ -54,9 +72,14 @@ export class AuthService {
     // Mettre à jour lastLogin
     await this.userRepository.update(user.id, { lastLogin: new Date() });
 
+    // Exclure le mot de passe et les champs sensibles du retour
+    const { password, deletedAt, ...userWithoutPassword } = user;
+    // Mettre à jour lastLogin dans l'objet retourné
+    userWithoutPassword.lastLogin = new Date();
+
     return {
       ...tokens,
-      user: user,
+      user: userWithoutPassword,
     };
   }
 
@@ -85,22 +108,28 @@ export class AuthService {
       isRevoked: true,
     });
 
+    // Récupérer l'utilisateur complet pour retourner tous les champs
+    const fullUser = await this.userRepository.findOne({
+      where: { id: refreshToken.user.id },
+    });
+
+    if (!fullUser) {
+      throw new UnauthorizedException('User not found');
+    }
+
     // Générer de nouveaux tokens
     const tokens = await this.generateTokens(
-      refreshToken.user,
+      fullUser,
       ipAddress,
       userAgent,
     );
 
+    // Exclure le mot de passe et les champs sensibles
+    const { password, deletedAt, ...userWithoutPassword } = fullUser;
+
     return {
       ...tokens,
-      user: {
-        id: refreshToken.user.id,
-        email: refreshToken.user.email,
-        firstName: refreshToken.user.firstName,
-        lastName: refreshToken.user.lastName,
-        role: refreshToken.user.role,
-      },
+      user: userWithoutPassword,
     };
   }
 
@@ -141,7 +170,7 @@ export class AuthService {
 
     // Générer access token (courte durée - 1 heure)
     const accessToken = this.jwtService.sign(payload, {
-      expiresIn: '1h',
+      expiresIn: '30d',
     });
 
     // Générer refresh token (longue durée - 7 jours)
