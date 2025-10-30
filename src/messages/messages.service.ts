@@ -47,12 +47,12 @@ export class MessagesService {
     // Validation: message privé OU groupe, pas les deux
     if (createMessageDto.groupId && createMessageDto.receiverId) {
       this.logger.warn(`❌ Tentative d'envoi à la fois privé et de groupe`);
-      throw new BadRequestException('Un message ne peut pas être à la fois privé et de groupe');
+      throw new BadRequestException('A message cannot be both private and group');
     }
 
     if (!createMessageDto.groupId && !createMessageDto.receiverId) {
       this.logger.warn(`❌ Aucun destinataire spécifié`);
-      throw new BadRequestException('Vous devez spécifier soit un destinataire, soit un groupe');
+      throw new BadRequestException('You must specify either a recipient or a group');
     }
 
     // Si receiverId est fourni mais pas receiverType, le récupérer automatiquement
@@ -65,8 +65,8 @@ export class MessagesService {
       });
 
       if (!receiver) {
-        this.logger.warn(`❌ Destinataire non trouvé: ID ${createMessageDto.receiverId}`);
-        throw new NotFoundException('Destinataire non trouvé');
+        this.logger.warn(`❌ Recipient not found: ID ${createMessageDto.receiverId}`);
+        throw new NotFoundException('Recipient not found');
       }
 
       // Convertir le role en ReceiverType
@@ -87,8 +87,8 @@ export class MessagesService {
       });
 
       if (!isMember) {
-        this.logger.warn(`⛔ Utilisateur ${senderId} n'est pas membre du groupe ${createMessageDto.groupId}`);
-        throw new ForbiddenException('Vous n\'êtes pas membre de ce groupe');
+        this.logger.warn(`⛔ User ${senderId} is not a member of group ${createMessageDto.groupId}`);
+        throw new ForbiddenException('You are not a member of this group');
       }
       
       this.logger.debug(`✅ Membre du groupe vérifié`);
@@ -124,9 +124,9 @@ export class MessagesService {
             .getOne();
 
           if (!friendship) {
-            this.logger.warn(`❌ Pas de relation d'amitié entre ${senderId} et ${createMessageDto.receiverId}`);
+            this.logger.warn(`❌ No friendship relationship between ${senderId} and ${createMessageDto.receiverId}`);
             throw new ForbiddenException(
-              'Vous ne pouvez envoyer des messages qu\'à vos amis. Envoyez d\'abord une demande d\'ami.'
+              'You can only send messages to your friends. Please send a friend request first.'
             );
           }
           
@@ -135,7 +135,7 @@ export class MessagesService {
           // Vérifier que la relation n'est pas bloquée
           if (friendship.status === FriendStatus.BLOCKED) {
             this.logger.warn(`🚫 Relation bloquée entre ${senderId} et ${createMessageDto.receiverId}`);
-            throw new ForbiddenException('Impossible d\'envoyer un message à cet utilisateur');
+            throw new ForbiddenException('Cannot send a message to this user');
           }
         }
       } else {
@@ -243,7 +243,7 @@ export class MessagesService {
 
     if (!isMember) {
       this.logger.warn(`⛔ Utilisateur ${userId} n'est pas membre du groupe ${groupId}`);
-      throw new ForbiddenException('Vous n\'êtes pas membre de ce groupe');
+      throw new ForbiddenException('You are not a member of this group');
     }
 
     const messages = await this.messageRepository
@@ -356,12 +356,12 @@ export class MessagesService {
     });
 
     if (!message) {
-      throw new NotFoundException('Message non trouvé');
+      throw new NotFoundException('Message not found');
     }
 
     // Seul le destinataire peut marquer comme lu
     if (message.receiverId !== userId || message.receiverType !== (userType as unknown as ReceiverType)) {
-      throw new ForbiddenException('Vous ne pouvez marquer que vos propres messages comme lus');
+      throw new ForbiddenException('You can only mark your own messages as read');
     }
 
     message.isRead = true;
@@ -431,7 +431,7 @@ export class MessagesService {
     });
 
     if (!group) {
-      throw new NotFoundException('Groupe non trouvé');
+      throw new NotFoundException('Group not found');
     }
 
     return group;
@@ -470,7 +470,7 @@ export class MessagesService {
     // Vérifier si le groupe existe
     const group = await this.groupRepository.findOne({ where: { id: groupId } });
     if (!group) {
-      throw new NotFoundException('Groupe non trouvé');
+      throw new NotFoundException('Group not found');
     }
 
     // Vérifier si l'utilisateur est déjà membre
@@ -483,7 +483,7 @@ export class MessagesService {
     });
 
     if (existingMember) {
-      throw new BadRequestException('Cet utilisateur est déjà membre du groupe');
+      throw new BadRequestException('This user is already a member of the group');
     }
 
     const member = this.groupMemberRepository.create({
@@ -500,7 +500,7 @@ export class MessagesService {
     });
 
     if (!member) {
-      throw new NotFoundException('Membre non trouvé dans ce groupe');
+      throw new NotFoundException('Member not found in this group');
     }
 
     await this.groupMemberRepository.remove(member);
@@ -510,12 +510,12 @@ export class MessagesService {
     const group = await this.groupRepository.findOne({ where: { id: groupId } });
 
     if (!group) {
-      throw new NotFoundException('Groupe non trouvé');
+      throw new NotFoundException('Group not found');
     }
 
     // Seul le créateur peut supprimer le groupe
     if (group.createdBy !== userId || group.creatorType !== userType) {
-      throw new ForbiddenException('Seul le créateur peut supprimer ce groupe');
+      throw new ForbiddenException('Only the creator can delete this group');
     }
 
     await this.groupRepository.remove(group);
@@ -529,7 +529,7 @@ export class MessagesService {
     // Vérifier qu'on ne s'ajoute pas soi-même
     if (requesterId === dto.studentId) {
       this.logger.warn(`❌ L'utilisateur ${requesterId} a tenté de s'ajouter lui-même`);
-      throw new BadRequestException('Vous ne pouvez pas vous ajouter vous-même');
+      throw new BadRequestException('You cannot add yourself');
     }
 
     // Vérifier si une relation existe déjà
@@ -551,13 +551,13 @@ export class MessagesService {
         await this.friendRepository.remove(existingFriend);
       } else if (existingFriend.status === FriendStatus.PENDING) {
         this.logger.warn(`⏳ Demande déjà en attente entre ${requesterId} et ${dto.studentId}`);
-        throw new BadRequestException('Une demande d\'ami est déjà en attente avec cet utilisateur');
+        throw new BadRequestException('A friend request is already pending with this user');
       } else if (existingFriend.status === FriendStatus.ACCEPTED) {
         this.logger.warn(`✅ Les utilisateurs ${requesterId} et ${dto.studentId} sont déjà amis`);
-        throw new BadRequestException('Vous êtes déjà ami avec cet utilisateur');
+        throw new BadRequestException('You are already friends with this user');
       } else if (existingFriend.status === FriendStatus.BLOCKED) {
         this.logger.warn(`🚫 Tentative d'envoi à un utilisateur bloqué: ${dto.studentId}`);
-        throw new BadRequestException('Cet utilisateur est bloqué');
+        throw new BadRequestException('This user is blocked');
       }
     } else {
       this.logger.debug(`✨ Aucune relation existante trouvée`);
@@ -588,12 +588,12 @@ export class MessagesService {
 
     if (!friendRequest) {
       this.logger.warn(`❌ Demande d'ami non trouvée: ID ${friendId} pour utilisateur ${studentId}`);
-      throw new NotFoundException('Demande d\'ami non trouvée');
+      throw new NotFoundException('Friend request not found');
     }
 
     if (friendRequest.status !== FriendStatus.PENDING) {
       this.logger.warn(`⚠️ Demande déjà traitée: ID ${friendId}, Status actuel: ${friendRequest.status}`);
-      throw new BadRequestException('Cette demande a déjà été traitée');
+      throw new BadRequestException('This request has already been processed');
     }
 
     friendRequest.status = accept ? FriendStatus.ACCEPTED : FriendStatus.REJECTED;
@@ -647,13 +647,13 @@ export class MessagesService {
 
     if (!friend) {
       this.logger.warn(`❌ Relation non trouvée: ID ${friendId}`);
-      throw new NotFoundException('Relation non trouvée');
+      throw new NotFoundException('Relationship not found');
     }
 
     // Vérifier que l'utilisateur est impliqué dans cette relation
     if (friend.requesterId !== studentId && friend.studentId !== studentId) {
       this.logger.warn(`⛔ Tentative de blocage non autorisée: Utilisateur ${studentId} sur relation ${friendId}`);
-      throw new ForbiddenException('Vous ne pouvez pas bloquer cette relation');
+      throw new ForbiddenException('You cannot block this relationship');
     }
 
     friend.status = FriendStatus.BLOCKED;
@@ -673,13 +673,13 @@ export class MessagesService {
 
     if (!friend) {
       this.logger.warn(`❌ Ami non trouvé: ID ${friendId}`);
-      throw new NotFoundException('Ami non trouvé');
+      throw new NotFoundException('Friend not found');
     }
 
     // Vérifier que l'utilisateur est impliqué dans cette relation
     if (friend.requesterId !== studentId && friend.studentId !== studentId) {
       this.logger.warn(`⛔ Tentative de suppression non autorisée: Utilisateur ${studentId} sur relation ${friendId}`);
-      throw new ForbiddenException('Vous ne pouvez pas supprimer cette relation');
+      throw new ForbiddenException('You cannot delete this relationship');
     }
 
     await this.friendRepository.remove(friend);

@@ -4,7 +4,7 @@ import { SenderType, ReceiverType } from '../entities/message.entity';
 
 export class CreateMessageDto {
   @ApiPropertyOptional({
-    description: 'ID du destinataire (pour message privé)',
+    description: 'Recipient ID (for private message)',
     example: 1,
   })
   @IsOptional()
@@ -12,7 +12,7 @@ export class CreateMessageDto {
   receiverId?: number;
 
   @ApiPropertyOptional({
-    description: 'Type du destinataire (optionnel - sera récupéré automatiquement depuis la base de données si non fourni)',
+    description: 'Recipient type (optional - will be automatically retrieved from database if not provided)',
     enum: ReceiverType,
     example: ReceiverType.STUDENT,
   })
@@ -21,7 +21,7 @@ export class CreateMessageDto {
   receiverType?: ReceiverType;
 
   @ApiPropertyOptional({
-    description: 'ID du groupe (pour message de groupe)',
+    description: 'Group ID (for group message)',
     example: 1,
   })
   @IsOptional()
@@ -29,8 +29,8 @@ export class CreateMessageDto {
   groupId?: number;
 
   @ApiProperty({
-    description: 'Contenu du message',
-    example: 'Bonjour, comment allez-vous ?',
+    description: 'Message content',
+    example: 'Hello, how are you?',
   })
   @IsString()
   @IsNotEmpty()

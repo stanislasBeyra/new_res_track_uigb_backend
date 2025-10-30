@@ -75,9 +75,9 @@ async function bootstrap() {
   // Configuration Swagger
   const config = new DocumentBuilder()
     .setTitle('Restrack API')
-    .setDescription('API pour le système de suivi de résidence étudiante')
+    .setDescription('API for student residence tracking system')
     .setVersion('1.0')
-    .addTag('Users', 'Gestion des utilisateurs')
+    .addTag('Users', 'User management')
     .addBearerAuth(
       {
         type: 'http',

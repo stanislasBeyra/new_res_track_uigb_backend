@@ -27,8 +27,8 @@ export class FcmTokensController {
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  @ApiOperation({ summary: 'Enregistrer un FCM token' })
-  @ApiResponse({ status: 201, description: 'Token enregistré', type: FcmToken })
+  @ApiOperation({ summary: 'Register an FCM token' })
+  @ApiResponse({ status: 201, description: 'Token registered', type: FcmToken })
   async registerToken(
     @Body() dto: RegisterTokenDto,
     @Request() req,
@@ -37,8 +37,8 @@ export class FcmTokensController {
   }
 
   @Get()
-  @ApiOperation({ summary: 'Récupérer mes FCM tokens' })
-  @ApiResponse({ status: 200, description: 'Liste des tokens', type: [FcmToken] })
+  @ApiOperation({ summary: 'Get my FCM tokens' })
+  @ApiResponse({ status: 200, description: 'List of tokens', type: [FcmToken] })
   async getMyTokens(@Request() req): Promise<FcmToken[]> {
     return this.fcmTokensService.getUserTokens(req.user.id);
   }
@@ -47,18 +47,18 @@ export class FcmTokensController {
 
   @Public()
   @Post('send-test')
-  @ApiOperation({ summary: 'Envoyer une notification de test' })
-  @ApiResponse({ status: 201, description: 'Notification envoyée avec succès' })
-  @ApiResponse({ status: 404, description: 'Aucun token actif trouvé pour cet utilisateur' })
-  @ApiBody({ type: SendTestNotificationDto }) // Optionnel mais recommandé
+  @ApiOperation({ summary: 'Send a test notification' })
+  @ApiResponse({ status: 201, description: 'Notification sent successfully' })
+  @ApiResponse({ status: 404, description: 'No active token found for this user' })
+  @ApiBody({ type: SendTestNotificationDto }) // Optional but recommended
   async sendTestNotification(@Body() dto: SendTestNotificationDto) {
     return this.fcmTokensService.sendTestNotification(dto.userId, dto.title, dto.body);
   }
 
   @Patch(':id/subscribe')
-  @ApiOperation({ summary: 'S\'abonner à un topic' })
-  @ApiParam({ name: 'id', description: 'ID du token' })
-  @ApiResponse({ status: 200, description: 'Abonné au topic', type: FcmToken })
+  @ApiOperation({ summary: 'Subscribe to a topic' })
+  @ApiParam({ name: 'id', description: 'Token ID' })
+  @ApiResponse({ status: 200, description: 'Subscribed to topic', type: FcmToken })
   async subscribeToTopic(
     @Param('id', ParseIntPipe) id: number,
     @Body() dto: SubscribeTopicDto,
@@ -68,9 +68,9 @@ export class FcmTokensController {
   }
 
   @Patch(':id/unsubscribe')
-  @ApiOperation({ summary: 'Se désabonner d\'un topic' })
-  @ApiParam({ name: 'id', description: 'ID du token' })
-  @ApiResponse({ status: 200, description: 'Désabonné du topic', type: FcmToken })
+  @ApiOperation({ summary: 'Unsubscribe from a topic' })
+  @ApiParam({ name: 'id', description: 'Token ID' })
+  @ApiResponse({ status: 200, description: 'Unsubscribed from topic', type: FcmToken })
   async unsubscribeFromTopic(
     @Param('id', ParseIntPipe) id: number,
     @Body() dto: SubscribeTopicDto,
@@ -81,9 +81,9 @@ export class FcmTokensController {
 
   @Patch(':id/deactivate')
   @HttpCode(HttpStatus.NO_CONTENT)
-  @ApiOperation({ summary: 'Désactiver un token' })
-  @ApiParam({ name: 'id', description: 'ID du token' })
-  @ApiResponse({ status: 204, description: 'Token désactivé' })
+  @ApiOperation({ summary: 'Deactivate a token' })
+  @ApiParam({ name: 'id', description: 'Token ID' })
+  @ApiResponse({ status: 204, description: 'Token deactivated' })
   async deactivateToken(
     @Param('id', ParseIntPipe) id: number,
     @Request() req,
@@ -93,9 +93,9 @@ export class FcmTokensController {
 
   @Delete(':token')
   @HttpCode(HttpStatus.NO_CONTENT)
-  @ApiOperation({ summary: 'Supprimer un token' })
+  @ApiOperation({ summary: 'Delete a token' })
   @ApiParam({ name: 'token', description: 'FCM Token' })
-  @ApiResponse({ status: 204, description: 'Token supprimé' })
+  @ApiResponse({ status: 204, description: 'Token deleted' })
   async deleteToken(
     @Param('token') token: string,
     @Request() req,

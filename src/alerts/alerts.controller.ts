@@ -18,8 +18,8 @@ export class AlertsController {
       return {
         success: result.success,
         message: result.success 
-          ? `Alerte envoyée avec succès à ${result.studentsNotified} étudiant(s)`
-          : 'Erreur lors de l\'envoi de l\'alerte',
+          ? `Alert sent successfully to ${result.studentsNotified} student(s)`
+          : 'Error sending alert',
         data: {
           studentsNotified: result.studentsNotified,
           pushNotificationsSent: result.pushNotificationsSent,
@@ -29,7 +29,7 @@ export class AlertsController {
     } catch (error: any) {
       return {
         success: false,
-        message: 'Erreur interne du serveur',
+        message: 'Internal server error',
         error: error.message
       };
     }
@@ -46,8 +46,8 @@ export class AlertsController {
       return {
         success: result.success,
         message: result.success 
-          ? `Alerte envoyée avec succès à ${result.usersNotified} utilisateur(s)`
-          : 'Erreur lors de l\'envoi de l\'alerte',
+          ? `Alert sent successfully to ${result.usersNotified} user(s)`
+          : 'Error sending alert',
         data: {
           usersNotified: result.usersNotified,
           pushNotificationsSent: result.pushNotificationsSent,
@@ -57,7 +57,7 @@ export class AlertsController {
     } catch (error: any) {
       return {
         success: false,
-        message: 'Erreur interne du serveur',
+        message: 'Internal server error',
         error: error.message
       };
     }
@@ -73,13 +73,13 @@ export class AlertsController {
       
       return {
         success: true,
-        message: 'Statistiques récupérées avec succès',
+        message: 'Statistics retrieved successfully',
         data: stats
       };
     } catch (error: any) {
       return {
         success: false,
-        message: 'Erreur lors de la récupération des statistiques',
+        message: 'Error retrieving statistics',
         error: error.message
       };
     }

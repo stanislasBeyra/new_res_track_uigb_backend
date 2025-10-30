@@ -16,25 +16,25 @@ export class DatabaseExceptionFilter implements ExceptionFilter {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
 
-    // Log de l'erreur
+    // Log the error
     this.logger.error('Database Error:', exception);
 
-    let message = 'Erreur de base de données';
+    let message = 'Database error';
     let status = HttpStatus.INTERNAL_SERVER_ERROR;
 
-    // Gérer les erreurs spécifiques MySQL
+    // Handle specific MySQL errors
     const error = exception as any;
 
-    // Violation de contrainte unique
+    // Unique constraint violation
     if (error.code === 'ER_DUP_ENTRY') {
       status = HttpStatus.CONFLICT;
-      message = 'Cette valeur existe déjà dans la base de données';
+      message = 'This value already exists in the database';
     }
 
-    // Violation de clé étrangère
+    // Foreign key violation
     else if (error.code === 'ER_NO_REFERENCED_ROW_2') {
       status = HttpStatus.BAD_REQUEST;
-      message = 'Référence invalide vers une entité inexistante';
+      message = 'Invalid reference to a non-existent entity';
     }
 
     const errorResponse = {

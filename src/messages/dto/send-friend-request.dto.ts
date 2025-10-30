@@ -3,7 +3,7 @@ import { IsInt } from 'class-validator';
 
 export class SendFriendRequestDto {
   @ApiProperty({
-    description: 'ID de l\'étudiant à ajouter',
+    description: 'Student ID to add',
     example: 2,
   })
   @IsInt()

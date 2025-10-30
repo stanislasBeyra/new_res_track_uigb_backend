@@ -17,8 +17,8 @@ export class ValidationExceptionFilter implements ExceptionFilter {
     const status = exception.getStatus();
     const exceptionResponse = exception.getResponse() as any;
 
-    // Log l'erreur de validation avec tous les détails
-    this.logger.error('🚨 Erreur de validation détectée:');
+    // Log the validation error with all details
+    this.logger.error('🚨 Validation error detected:');
     this.logger.error(`Message: ${JSON.stringify(exceptionResponse.message)}`);
     if (Array.isArray(exceptionResponse.message)) {
       exceptionResponse.message.forEach((err: string) => {
@@ -29,7 +29,7 @@ export class ValidationExceptionFilter implements ExceptionFilter {
     const errorResponse = {
       statusCode: status,
       timestamp: new Date().toISOString(),
-      message: 'Erreur de validation',
+      message: 'Validation error',
       errors: exceptionResponse.message || [],
     };
 

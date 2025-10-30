@@ -14,33 +14,33 @@ export class ExitsController {
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  @ApiOperation({ summary: 'Créer une demande de sortie (étudiant)' })
-  @ApiResponse({ status: 201, description: 'Sortie créée avec succès', type: Exit })
-  @ApiResponse({ status: 401, description: 'Non autorisé' })
+  @ApiOperation({ summary: 'Create an exit request (student)' })
+  @ApiResponse({ status: 201, description: 'Exit created successfully', type: Exit })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
   create(@Body() createExitDto: CreateExitDto, @CurrentUser('id') userId: number): Promise<Exit> {
     return this.exitsService.createStudentExit(createExitDto, userId);
   }
 
   @Get()
-  @ApiOperation({ summary: 'Récupérer toutes les sorties (admin)' })
-  @ApiResponse({ status: 200, description: 'Liste des sorties', type: [Exit] })
+  @ApiOperation({ summary: 'Get all exits (admin)' })
+  @ApiResponse({ status: 200, description: 'List of exits', type: [Exit] })
   findAll(): Promise<Exit[]> {
     return this.exitsService.findAllByAdmin();
   }
 
   @Get('my-exits')
-  @ApiOperation({ summary: 'Récupérer mes sorties (étudiant connecté)' })
-  @ApiResponse({ status: 200, description: 'Liste de mes sorties', type: [Exit] })
-  @ApiResponse({ status: 401, description: 'Non autorisé' })
+  @ApiOperation({ summary: 'Get my exits (logged in student)' })
+  @ApiResponse({ status: 200, description: 'List of my exits', type: [Exit] })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
   getMyExits(@Request() req): Promise<Exit[]> {
     return this.exitsService.findAllExitsByStudent(req.user.id);
   }
 
   @Get('stats')
-  @ApiOperation({ summary: 'Récupérer les statistiques globales des sorties (admin)' })
+  @ApiOperation({ summary: 'Get global exit statistics (admin)' })
   @ApiResponse({
     status: 200,
-    description: 'Statistiques des sorties',
+    description: 'Exit statistics',
     schema: {
       properties: {
         total: { type: 'number', example: 150 },
@@ -55,10 +55,10 @@ export class ExitsController {
   }
 
   @Get('stats/my-stats')
-  @ApiOperation({ summary: 'Récupérer mes statistiques de sorties (étudiant connecté)' })
+  @ApiOperation({ summary: 'Get my exit statistics (logged in student)' })
   @ApiResponse({
     status: 200,
-    description: 'Mes statistiques de sorties',
+    description: 'My exit statistics',
     schema: {
       properties: {
         total: { type: 'number', example: 10 },
@@ -73,11 +73,11 @@ export class ExitsController {
   }
 
   @Get('student/:studentId')
-  @ApiOperation({ summary: 'Récupérer les sorties d\'un étudiant spécifique (admin)' })
-  @ApiParam({ name: 'studentId', description: 'ID de l\'étudiant', type: 'number' })
-  @ApiResponse({ status: 200, description: 'Liste des sorties de l\'étudiant', type: [Exit] })
-  @ApiResponse({ status: 401, description: 'Non autorisé' })
-  @ApiResponse({ status: 404, description: 'Étudiant non trouvé' })
+  @ApiOperation({ summary: 'Get exits for a specific student (admin)' })
+  @ApiParam({ name: 'studentId', description: 'Student ID', type: 'number' })
+  @ApiResponse({ status: 200, description: 'List of student exits', type: [Exit] })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiResponse({ status: 404, description: 'Student not found' })
   getStudentExits(
     @Param('studentId') studentId: string,
     @Query('page') page: string = '1',
@@ -95,11 +95,11 @@ export class ExitsController {
   }
 
   @Get('stats/:studentId')
-  @ApiOperation({ summary: 'Récupérer les statistiques d\'un étudiant spécifique (admin)' })
-  @ApiParam({ name: 'studentId', description: 'ID de l\'étudiant', type: 'number' })
+  @ApiOperation({ summary: 'Get statistics for a specific student (admin)' })
+  @ApiParam({ name: 'studentId', description: 'Student ID', type: 'number' })
   @ApiResponse({
     status: 200,
-    description: 'Statistiques de l\'étudiant',
+    description: 'Student statistics',
     schema: {
       properties: {
         total: { type: 'number', example: 10 },
@@ -130,9 +130,9 @@ export class ExitsController {
 
   @Patch(':id/return')
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Marquer le retour d\'une sortie' })
-  @ApiResponse({ status: 200, description: 'Retour enregistré avec succès', type: Exit })
-  @ApiResponse({ status: 404, description: 'Sortie non trouvée' })
+  @ApiOperation({ summary: 'Mark exit return' })
+  @ApiResponse({ status: 200, description: 'Return recorded successfully', type: Exit })
+  @ApiResponse({ status: 404, description: 'Exit not found' })
   recordReturn(@Param('id') id: string): Promise<Exit> {
     return this.exitsService.recordReturn(+id);
   }

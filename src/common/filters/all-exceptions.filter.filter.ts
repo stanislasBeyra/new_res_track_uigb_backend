@@ -25,9 +25,9 @@ export class AllExceptionsFilter implements ExceptionFilter {
     const message =
       exception instanceof HttpException
         ? exception.getResponse()
-        : 'Erreur interne du serveur';
+        : 'Internal server error';
 
-    // Log de l'erreur
+    // Log the error
     this.logger.error(
       `Status: ${status} Error: ${JSON.stringify(message)}`,
       exception instanceof Error ? exception.stack : '',
@@ -38,7 +38,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
       message:
         typeof message === 'string'
           ? message
-          : (message as any).message || 'Une erreur est survenue',
+          : (message as any).message || 'An error occurred',
       error: {
         statusCode: status,
         timestamp: new Date().toISOString(),

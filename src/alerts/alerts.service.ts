@@ -48,7 +48,7 @@ export class AlertsService {
           success: false,
           studentsNotified: 0,
           pushNotificationsSent: 0,
-          errors: ['Aucun étudiant trouvé']
+          errors: ['No students found']
         };
       }
 
@@ -72,8 +72,8 @@ export class AlertsService {
         studentsNotified = notifications.length;
         console.log(`✅ ${studentsNotified} notification(s) créée(s) pour les étudiants`);
       } catch (notificationError: any) {
-        errors.push(`Erreur notifications: ${notificationError.message}`);
-        console.error('❌ Erreur lors de la création des notifications:', notificationError);
+        errors.push(`Notification error: ${notificationError.message}`);
+        console.error('❌ Error creating notifications:', notificationError);
       }
 
       // Envoyer des notifications push à tous les étudiants
@@ -86,10 +86,10 @@ export class AlertsService {
           'emergency-alert'
         );
         pushNotificationsSent = studentIds.length;
-        console.log(`📱 ${pushNotificationsSent} notification(s) push envoyée(s) aux étudiants`);
+        console.log(`📱 ${pushNotificationsSent} push notification(s) sent to students`);
       } catch (pushError: any) {
-        errors.push(`Erreur push notifications: ${pushError.message}`);
-        console.error('❌ Erreur lors de l\'envoi des notifications push:', pushError);
+        errors.push(`Push notification error: ${pushError.message}`);
+        console.error('❌ Error sending push notifications:', pushError);
       }
 
       return {
@@ -100,12 +100,12 @@ export class AlertsService {
       };
 
     } catch (error: any) {
-      console.error('❌ Erreur générale lors de l\'envoi de l\'alerte d\'urgence:', error);
+      console.error('❌ General error sending emergency alert:', error);
       return {
         success: false,
         studentsNotified: 0,
         pushNotificationsSent: 0,
-        errors: [`Erreur générale: ${error.message}`]
+        errors: [`General error: ${error.message}`]
       };
     }
   }
@@ -134,7 +134,7 @@ export class AlertsService {
           success: false,
           usersNotified: 0,
           pushNotificationsSent: 0,
-          errors: ['Aucun utilisateur trouvé']
+          errors: ['No users found']
         };
       }
 
@@ -158,8 +158,8 @@ export class AlertsService {
         usersNotified = notifications.length;
         console.log(`✅ ${usersNotified} notification(s) créée(s) pour tous les utilisateurs`);
       } catch (notificationError: any) {
-        errors.push(`Erreur notifications: ${notificationError.message}`);
-        console.error('❌ Erreur lors de la création des notifications:', notificationError);
+        errors.push(`Notification error: ${notificationError.message}`);
+        console.error('❌ Error creating notifications:', notificationError);
       }
 
       // Envoyer des notifications push à tous les utilisateurs
@@ -172,10 +172,10 @@ export class AlertsService {
           'emergency-alert'
         );
         pushNotificationsSent = userIds.length;
-        console.log(`📱 ${pushNotificationsSent} notification(s) push envoyée(s) à tous les utilisateurs`);
+        console.log(`📱 ${pushNotificationsSent} push notification(s) sent to all users`);
       } catch (pushError: any) {
-        errors.push(`Erreur push notifications: ${pushError.message}`);
-        console.error('❌ Erreur lors de l\'envoi des notifications push:', pushError);
+        errors.push(`Push notification error: ${pushError.message}`);
+        console.error('❌ Error sending push notifications:', pushError);
       }
 
       return {
@@ -186,12 +186,12 @@ export class AlertsService {
       };
 
     } catch (error: any) {
-      console.error('❌ Erreur générale lors de l\'envoi de l\'alerte d\'urgence:', error);
+      console.error('❌ General error sending emergency alert:', error);
       return {
         success: false,
         usersNotified: 0,
         pushNotificationsSent: 0,
-        errors: [`Erreur générale: ${error.message}`]
+        errors: [`General error: ${error.message}`]
       };
     }
   }
@@ -217,7 +217,7 @@ export class AlertsService {
         totalUsers
       };
     } catch (error) {
-      console.error('❌ Erreur lors de la récupération des statistiques:', error);
+      console.error('❌ Error retrieving statistics:', error);
       return {
         totalStudents: 0,
         totalAdmins: 0,

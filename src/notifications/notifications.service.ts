@@ -70,7 +70,7 @@ export class NotificationsService {
     console.log(`📊 Nombre d'admins trouvés: ${admins.length}`);
 
     if (admins.length === 0) {
-      console.warn('⚠️ Aucun admin actif trouvé pour recevoir la notification');
+      console.warn('⚠️ No active admin found to receive the notification');
       return [];
     }
 
@@ -84,9 +84,9 @@ export class NotificationsService {
           ...data,
         });
         notifications.push(notification);
-        console.log(`✅ Notification créée pour admin ID ${admin.id}`);
+        console.log(`✅ Notification created for admin ID ${admin.id}`);
       } catch (error) {
-        console.error(`❌ Erreur création notification pour admin ${admin.id}:`, error.message);
+        console.error(`❌ Error creating notification for admin ${admin.id}:`, error.message);
       }
     }
 
@@ -112,7 +112,7 @@ export class NotificationsService {
     metadata?: Record<string, any>;
   }): Promise<Notification[]> {
     if (userIds.length === 0) {
-      console.warn('⚠️ Aucun utilisateur spécifié pour recevoir la notification');
+      console.warn('⚠️ No user specified to receive the notification');
       return [];
     }
 
@@ -126,9 +126,9 @@ export class NotificationsService {
           ...data,
         });
         notifications.push(notification);
-        console.log(`✅ Notification créée pour utilisateur ID ${userId}`);
+        console.log(`✅ Notification created for user ID ${userId}`);
       } catch (error) {
-        console.error(`❌ Erreur création notification pour utilisateur ${userId}:`, error.message);
+        console.error(`❌ Error creating notification for user ${userId}:`, error.message);
       }
     }
 

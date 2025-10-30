@@ -4,8 +4,8 @@ import { Transform } from 'class-transformer';
 
 export class CreateExitDto {
   @ApiProperty({
-    description: 'Raison de la sortie',
-    example: 'Visite familiale',
+    description: 'Exit reason',
+    example: 'Family visit',
     maxLength: 255,
   })
   @IsString()
@@ -22,7 +22,7 @@ export class CreateExitDto {
   destination: string;
 
   @ApiProperty({
-    description: 'Date et heure de départ',
+    description: 'Departure date and time',
     example: '2025-10-15T10:00:00Z',
     type: String,
   })
@@ -30,7 +30,7 @@ export class CreateExitDto {
   departureDate: string;
 
   @ApiProperty({
-    description: 'Date et heure de retour prévue',
+    description: 'Expected return date and time',
     example: '2025-10-20T18:00:00Z',
     type: String,
   })
@@ -38,8 +38,8 @@ export class CreateExitDto {
   expectedReturnDate: string;
 
   @ApiProperty({
-    description: 'Description détaillée (optionnel)',
-    example: 'Je vais rendre visite à ma famille pour le weekend',
+    description: 'Detailed description (optional)',
+    example: 'I will visit my family for the weekend',
     required: false,
   })
   @IsOptional()

@@ -15,7 +15,7 @@ export class AuthExceptionFilter implements ExceptionFilter {
     response.status(401).json({
       statusCode: 401,
       timestamp: new Date().toISOString(),
-      message: 'Non autorisé. Veuillez vous connecter.',
+      message: 'Unauthorized. Please log in.',
       error: 'Unauthorized',
     });
   }

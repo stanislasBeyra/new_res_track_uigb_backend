@@ -32,8 +32,8 @@ export class MessagesController {
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  @ApiOperation({ summary: 'Envoyer un message privé ou de groupe' })
-  @ApiResponse({ status: 201, description: 'Message envoyé', type: Message })
+  @ApiOperation({ summary: 'Send a private or group message' })
+  @ApiResponse({ status: 201, description: 'Message sent', type: Message })
   async sendMessage(
     @Body() createMessageDto: CreateMessageDto,
     @Request() req,
@@ -46,17 +46,17 @@ export class MessagesController {
   }
 
   @Get('conversations')
-  @ApiOperation({ summary: 'Récupérer toutes les conversations de l\'utilisateur' })
-  @ApiResponse({ status: 200, description: 'Liste des conversations' })
+  @ApiOperation({ summary: 'Get all user conversations' })
+  @ApiResponse({ status: 200, description: 'List of conversations' })
   async getConversations(@Request() req): Promise<any[]> {
     return this.messagesService.getUserConversations(req.user.id, req.user.role);
   }
 
   @Get('conversation/:otherUserId/:otherUserType')
-  @ApiOperation({ summary: 'Récupérer une conversation privée' })
-  @ApiParam({ name: 'otherUserId', description: 'ID de l\'autre utilisateur' })
-  @ApiParam({ name: 'otherUserType', description: 'Type de l\'autre utilisateur (STUDENT/ADMIN)' })
-  @ApiResponse({ status: 200, description: 'Messages de la conversation' })
+  @ApiOperation({ summary: 'Get a private conversation' })
+  @ApiParam({ name: 'otherUserId', description: 'Other user ID' })
+  @ApiParam({ name: 'otherUserType', description: 'Other user type (STUDENT/ADMIN)' })
+  @ApiResponse({ status: 200, description: 'Conversation messages' })
   async getConversation(
     @Param('otherUserId', ParseIntPipe) otherUserId: number,
     @Param('otherUserType') otherUserType: string,
@@ -71,9 +71,9 @@ export class MessagesController {
   }
 
   @Patch(':id/read')
-  @ApiOperation({ summary: 'Marquer un message comme lu' })
-  @ApiParam({ name: 'id', description: 'ID du message' })
-  @ApiResponse({ status: 200, description: 'Message marqué comme lu' })
+  @ApiOperation({ summary: 'Mark a message as read' })
+  @ApiParam({ name: 'id', description: 'Message ID' })
+  @ApiResponse({ status: 200, description: 'Message marked as read' })
   async markAsRead(
     @Param('id', ParseIntPipe) id: number,
     @Request() req,
@@ -82,10 +82,10 @@ export class MessagesController {
   }
 
   @Patch('conversation/:otherUserId/:otherUserType/read')
-  @ApiOperation({ summary: 'Marquer tous les messages d\'une conversation comme lus' })
-  @ApiParam({ name: 'otherUserId', description: 'ID de l\'autre utilisateur' })
-  @ApiParam({ name: 'otherUserType', description: 'Type de l\'autre utilisateur (STUDENT/ADMIN)' })
-  @ApiResponse({ status: 200, description: 'Conversation marquée comme lue' })
+  @ApiOperation({ summary: 'Mark all messages in a conversation as read' })
+  @ApiParam({ name: 'otherUserId', description: 'Other user ID' })
+  @ApiParam({ name: 'otherUserType', description: 'Other user type (STUDENT/ADMIN)' })
+  @ApiResponse({ status: 200, description: 'Conversation marked as read' })
   async markConversationAsRead(
     @Param('otherUserId', ParseIntPipe) otherUserId: number,
     @Param('otherUserType') otherUserType: string,
@@ -101,9 +101,9 @@ export class MessagesController {
   }
 
   @Patch('groups/:groupId/read')
-  @ApiOperation({ summary: 'Marquer tous les messages d\'un groupe comme lus' })
-  @ApiParam({ name: 'groupId', description: 'ID du groupe' })
-  @ApiResponse({ status: 200, description: 'Messages du groupe marqués comme lus' })
+  @ApiOperation({ summary: 'Mark all messages in a group as read' })
+  @ApiParam({ name: 'groupId', description: 'Group ID' })
+  @ApiResponse({ status: 200, description: 'Group messages marked as read' })
   async markGroupMessagesAsRead(
     @Param('groupId', ParseIntPipe) groupId: number,
     @Request() req,
@@ -120,8 +120,8 @@ export class MessagesController {
 
   @Post('groups')
   @HttpCode(HttpStatus.CREATED)
-  @ApiOperation({ summary: 'Créer un groupe' })
-  @ApiResponse({ status: 201, description: 'Groupe créé', type: Group })
+  @ApiOperation({ summary: 'Create a group' })
+  @ApiResponse({ status: 201, description: 'Group created', type: Group })
   async createGroup(
     @Body() createGroupDto: CreateGroupDto,
     @Request() req,
@@ -134,24 +134,24 @@ export class MessagesController {
   }
 
   @Get('groups')
-  @ApiOperation({ summary: 'Récupérer les groupes de l\'utilisateur' })
-  @ApiResponse({ status: 200, description: 'Liste des groupes' })
+  @ApiOperation({ summary: 'Get user groups' })
+  @ApiResponse({ status: 200, description: 'List of groups' })
   async getUserGroups(@Request() req): Promise<Group[]> {
     return this.messagesService.getUserGroups(req.user.id, req.user.role);
   }
 
   @Get('groups/:id')
-  @ApiOperation({ summary: 'Récupérer un groupe' })
-  @ApiParam({ name: 'id', description: 'ID du groupe' })
-  @ApiResponse({ status: 200, description: 'Détails du groupe', type: Group })
+  @ApiOperation({ summary: 'Get a group' })
+  @ApiParam({ name: 'id', description: 'Group ID' })
+  @ApiResponse({ status: 200, description: 'Group details', type: Group })
   async getGroup(@Param('id', ParseIntPipe) id: number): Promise<Group> {
     return this.messagesService.getGroup(id);
   }
 
   @Get('groups/:id/messages')
-  @ApiOperation({ summary: 'Récupérer les messages d\'un groupe' })
-  @ApiParam({ name: 'id', description: 'ID du groupe' })
-  @ApiResponse({ status: 200, description: 'Messages du groupe' })
+  @ApiOperation({ summary: 'Get group messages' })
+  @ApiParam({ name: 'id', description: 'Group ID' })
+  @ApiResponse({ status: 200, description: 'Group messages' })
   async getGroupMessages(
     @Param('id', ParseIntPipe) id: number,
     @Request() req,
@@ -161,9 +161,9 @@ export class MessagesController {
 
   @Post('groups/:id/members')
   @HttpCode(HttpStatus.CREATED)
-  @ApiOperation({ summary: 'Ajouter un membre à un groupe' })
-  @ApiParam({ name: 'id', description: 'ID du groupe' })
-  @ApiResponse({ status: 201, description: 'Membre ajouté' })
+  @ApiOperation({ summary: 'Add a member to a group' })
+  @ApiParam({ name: 'id', description: 'Group ID' })
+  @ApiResponse({ status: 201, description: 'Member added' })
   async addGroupMember(
     @Param('id', ParseIntPipe) id: number,
     @Body() dto: AddGroupMemberDto,
@@ -173,11 +173,11 @@ export class MessagesController {
 
   @Delete('groups/:groupId/members/:userId/:userType')
   @HttpCode(HttpStatus.NO_CONTENT)
-  @ApiOperation({ summary: 'Retirer un membre d\'un groupe' })
-  @ApiParam({ name: 'groupId', description: 'ID du groupe' })
-  @ApiParam({ name: 'userId', description: 'ID de l\'utilisateur' })
-  @ApiParam({ name: 'userType', description: 'Type d\'utilisateur' })
-  @ApiResponse({ status: 204, description: 'Membre retiré' })
+  @ApiOperation({ summary: 'Remove a member from a group' })
+  @ApiParam({ name: 'groupId', description: 'Group ID' })
+  @ApiParam({ name: 'userId', description: 'User ID' })
+  @ApiParam({ name: 'userType', description: 'User type' })
+  @ApiResponse({ status: 204, description: 'Member removed' })
   async removeGroupMember(
     @Param('groupId', ParseIntPipe) groupId: number,
     @Param('userId', ParseIntPipe) userId: number,
@@ -188,9 +188,9 @@ export class MessagesController {
 
   @Delete('groups/:id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  @ApiOperation({ summary: 'Supprimer un groupe' })
-  @ApiParam({ name: 'id', description: 'ID du groupe' })
-  @ApiResponse({ status: 204, description: 'Groupe supprimé' })
+  @ApiOperation({ summary: 'Delete a group' })
+  @ApiParam({ name: 'id', description: 'Group ID' })
+  @ApiResponse({ status: 204, description: 'Group deleted' })
   async deleteGroup(
     @Param('id', ParseIntPipe) id: number,
     @Request() req,
@@ -202,8 +202,8 @@ export class MessagesController {
 
   @Post('friends/request')
   @HttpCode(HttpStatus.CREATED)
-  @ApiOperation({ summary: 'Envoyer une demande d\'ami' })
-  @ApiResponse({ status: 201, description: 'Demande envoyée', type: Friend })
+  @ApiOperation({ summary: 'Send a friend request' })
+  @ApiResponse({ status: 201, description: 'Friend request sent', type: Friend })
   async sendFriendRequest(
     @Body() dto: SendFriendRequestDto,
     @Request() req,
@@ -212,9 +212,9 @@ export class MessagesController {
   }
 
   @Patch('friends/:id/accept')
-  @ApiOperation({ summary: 'Accepter une demande d\'ami' })
-  @ApiParam({ name: 'id', description: 'ID de la demande' })
-  @ApiResponse({ status: 200, description: 'Demande acceptée', type: Friend })
+  @ApiOperation({ summary: 'Accept a friend request' })
+  @ApiParam({ name: 'id', description: 'Request ID' })
+  @ApiResponse({ status: 200, description: 'Friend request accepted', type: Friend })
   async acceptFriendRequest(
     @Param('id', ParseIntPipe) id: number,
     @Request() req,
@@ -223,9 +223,9 @@ export class MessagesController {
   }
 
   @Patch('friends/:id/reject')
-  @ApiOperation({ summary: 'Rejeter une demande d\'ami' })
-  @ApiParam({ name: 'id', description: 'ID de la demande' })
-  @ApiResponse({ status: 200, description: 'Demande rejetée', type: Friend })
+  @ApiOperation({ summary: 'Reject a friend request' })
+  @ApiParam({ name: 'id', description: 'Request ID' })
+  @ApiResponse({ status: 200, description: 'Friend request rejected', type: Friend })
   async rejectFriendRequest(
     @Param('id', ParseIntPipe) id: number,
     @Request() req,
@@ -234,23 +234,23 @@ export class MessagesController {
   }
 
   @Get('friends')
-  @ApiOperation({ summary: 'Récupérer la liste des amis' })
-  @ApiResponse({ status: 200, description: 'Liste des amis' })
+  @ApiOperation({ summary: 'Get friends list' })
+  @ApiResponse({ status: 200, description: 'List of friends' })
   async getFriends(@Request() req): Promise<Friend[]> {
     return this.messagesService.getFriends(req.user.id);
   }
 
   @Get('friends/pending')
-  @ApiOperation({ summary: 'Récupérer les demandes d\'ami en attente' })
-  @ApiResponse({ status: 200, description: 'Demandes en attente' })
+  @ApiOperation({ summary: 'Get pending friend requests' })
+  @ApiResponse({ status: 200, description: 'Pending requests' })
   async getPendingRequests(@Request() req): Promise<Friend[]> {
     return this.messagesService.getPendingRequests(req.user.id);
   }
 
   @Patch('friends/:id/block')
-  @ApiOperation({ summary: 'Bloquer un utilisateur' })
-  @ApiParam({ name: 'id', description: 'ID de la relation ami' })
-  @ApiResponse({ status: 200, description: 'Utilisateur bloqué', type: Friend })
+  @ApiOperation({ summary: 'Block a user' })
+  @ApiParam({ name: 'id', description: 'Friend relationship ID' })
+  @ApiResponse({ status: 200, description: 'User blocked', type: Friend })
   async blockUser(
     @Param('id', ParseIntPipe) id: number,
     @Request() req,
@@ -260,9 +260,9 @@ export class MessagesController {
 
   @Delete('friends/:id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  @ApiOperation({ summary: 'Supprimer un ami' })
-  @ApiParam({ name: 'id', description: 'ID de la relation ami' })
-  @ApiResponse({ status: 204, description: 'Ami supprimé' })
+  @ApiOperation({ summary: 'Remove a friend' })
+  @ApiParam({ name: 'id', description: 'Friend relationship ID' })
+  @ApiResponse({ status: 204, description: 'Friend removed' })
   async removeFriend(
     @Param('id', ParseIntPipe) id: number,
     @Request() req,
