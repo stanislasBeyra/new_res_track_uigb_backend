@@ -31,8 +31,7 @@ export class AuthService {
   ): Promise<AuthResponseDto> {
     // Trouver l'utilisateur avec le mot de passe
     const user = await this.userRepository.findOne({
-      where: { email: loginDto.email },
-      select: ['id', 'email', 'password', 'firstName', 'lastName', 'role', 'isActive'],
+      where: { email: loginDto.email }
     });
 
     if (!user) {
@@ -57,13 +56,7 @@ export class AuthService {
 
     return {
       ...tokens,
-      user: {
-        id: user.id,
-        email: user.email,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        role: user.role,
-      },
+      user: user,
     };
   }
 
