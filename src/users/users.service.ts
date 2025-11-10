@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -8,6 +8,8 @@ import { UserRole } from '../enum/userrole';
 
 @Injectable()
 export class UsersService {
+  private readonly logger = new Logger(UsersService.name);
+
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
@@ -20,9 +22,23 @@ export class UsersService {
       }
 
       // Validation de l'email
-      if (createUserDto.email) {
+      if (createUserDto.email && createUserDto.role === UserRole.STUDENT) {
         const email = createUserDto.email;
         if (!email.endsWith('@student.iugb.edu.ci')) {
+          throw new BadRequestException('this email address is not valid');
+        }
+
+        const emailExists = await this.userRepository.findOne({
+          where: { email: createUserDto.email }
+        });
+        if (emailExists) {
+          throw new BadRequestException('the email already exists');
+        }
+      }
+
+      if (createUserDto.email && createUserDto.role === UserRole.ADMIN) {
+        const email = createUserDto.email;
+        if (!email.endsWith('@iugb.edu.ci')) {
           throw new BadRequestException('this email address is not valid');
         }
 
@@ -248,22 +264,81 @@ export class UsersService {
   }
 
   async remove(id: number): Promise<void> {
+    this.logger.log(`🗑️ Attempting to delete user with ID: ${id}`);
+    
     try {
       if (!id) {
+        this.logger.error('❌ User ID is missing');
         throw new BadRequestException('User ID is required');
       }
 
-      const user = await this.userRepository.findOne({ where: { id } });
+      this.logger.debug(`🔍 Searching for user with ID: ${id}`);
+      const user = await this.userRepository.findOne({ 
+        where: { id },
+        relations: ['exits']
+      });
+      
       if (!user) {
+        this.logger.warn(`⚠️ User with ID ${id} not found`);
         throw new NotFoundException('User not found');
       }
 
-      await this.userRepository.delete(id);
+      this.logger.log(`✅ User found: ${user.firstName} ${user.lastName} (ID: ${id})`);
+      this.logger.debug(`📊 User has ${user.exits?.length || 0} exit(s) associated`);
+
+      // Check for related data that might prevent deletion (for logging only)
+      const exitCount = await this.userRepository.manager
+        .createQueryBuilder()
+        .from('exits', 'exit')
+        .where('exit.student_id = :id', { id })
+        .getCount();
+      
+      const groupMemberCount = await this.userRepository.manager
+        .createQueryBuilder()
+        .from('group_members', 'gm')
+        .where('gm.user_id = :id', { id })
+        .getCount();
+      
+      const messageCount = await this.userRepository.manager
+        .createQueryBuilder()
+        .from('messages', 'msg')
+        .where('msg.sender_id = :id OR msg.receiver_id = :id', { id })
+        .getCount();
+      
+      const friendCount = await this.userRepository.manager
+        .createQueryBuilder()
+        .from('friends', 'fr')
+        .where('fr.requester_id = :id OR fr.student_id = :id', { id })
+        .getCount();
+      
+      this.logger.debug(`📊 Found ${exitCount} exit(s), ${groupMemberCount} group member(s), ${messageCount} message(s), ${friendCount} friend relation(s) for user ${id}`);
+
+      this.logger.log(`🗑️ Soft deleting user ${id}...`);
+      
+      // Use softDelete with ID to avoid loading relations and triggering foreign key checks
+      // This directly updates the deletedAt column without affecting foreign key constraints
+      const updateResult = await this.userRepository.softDelete(id);
+      
+      this.logger.log(`✅ Soft delete result: ${JSON.stringify(updateResult)}`);
+      
+      if (updateResult.affected === 0) {
+        this.logger.warn(`⚠️ No rows affected by soft delete operation for user ${id}`);
+        throw new NotFoundException('User not found or already deleted');
+      }
+      
+      this.logger.log(`✅ Successfully soft deleted user ${id} (deletedAt timestamp set, ${updateResult.affected} row(s) affected)`);
     } catch (error) {
+      this.logger.error(`❌ Error soft deleting user ${id}:`, error);
+      this.logger.error(`❌ Error name: ${error?.name}`);
+      this.logger.error(`❌ Error message: ${error?.message}`);
+      this.logger.error(`❌ Error code: ${error?.code}`);
+      this.logger.error(`❌ Error stack: ${error?.stack}`);
+      
       if (error instanceof BadRequestException || error instanceof NotFoundException) {
         throw error;
       }
-      throw new BadRequestException('Error while deleting the user');
+      
+      throw new BadRequestException(`Error while deleting the user: ${error?.message || 'Unknown error'}`);
     }
   }
 

@@ -11,9 +11,11 @@ import {
   UploadedFile,
   HttpCode,
   HttpStatus,
+  BadRequestException,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiConsumes, ApiBody, ApiBearerAuth } from '@nestjs/swagger';
+import { Logger } from '@nestjs/common';
 import { multerConfig } from '../config/multer.config';
 import { Public } from '../common/decorators/public.decorator';
 import { UsersService } from './users.service';
@@ -21,11 +23,14 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UploadFileDto } from './dto/upload-file.dto';
 import { User } from './entities/user.entity';
+import { UserRole } from '../enum/userrole';
 
 @ApiTags('Users')
 @ApiBearerAuth('JWT-auth')
 @Controller('users')
 export class UsersController {
+  private readonly logger = new Logger(UsersController.name);
+
   constructor(private readonly usersService: UsersService) {}
 
   @Public()
@@ -45,6 +50,19 @@ export class UsersController {
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   async findAll(): Promise<User[]> {
     return this.usersService.findAll();
+  }
+
+  @Get('role/:role')
+  @ApiOperation({ summary: 'Get users by role (STUDENT or ADMIN)' })
+  @ApiParam({ name: 'role', enum: UserRole, description: 'User role (STUDENT or ADMIN)' })
+  @ApiResponse({ status: 200, description: 'List of users by role', type: [User] })
+  @ApiResponse({ status: 400, description: 'Invalid role' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  async findByRole(@Param('role') role: UserRole): Promise<User[]> {
+    if (role !== UserRole.STUDENT && role !== UserRole.ADMIN) {
+      throw new BadRequestException('Invalid role. Must be STUDENT or ADMIN');
+    }
+    return this.usersService.findByRole(role);
   }
 
   @Public()
@@ -86,7 +104,14 @@ export class UsersController {
   @ApiResponse({ status: 204, description: 'User deleted' })
   @ApiResponse({ status: 404, description: 'User not found' })
   async remove(@Param('id', ParseIntPipe) id: number): Promise<void> {
-    return this.usersService.remove(id);
+    this.logger.log(`📥 DELETE /users/${id} - Request received`);
+    try {
+      await this.usersService.remove(id);
+      this.logger.log(`✅ DELETE /users/${id} - Success`);
+    } catch (error) {
+      this.logger.error(`❌ DELETE /users/${id} - Error: ${error?.message}`, error?.stack);
+      throw error;
+    }
   }
 
   @Patch(':id/profile-picture')
