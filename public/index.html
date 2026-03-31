@@ -1,753 +1,696 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ResTrack - Système de Gestion de Résidence Étudiante</title>
-    
-    <!-- Font Awesome -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <!-- MDB 5 CSS -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/7.1.0/mdb.min.css" rel="stylesheet">
-    
-    <style>
-        :root {
-            --primary-color: #667eea;
-            --secondary-color: #764ba2;
-            --accent-color: #f093fb;
-        }
-        
-        body {
-            overflow-x: hidden;
-        }
-        
-        .hero-section {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 120px 0 80px;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .hero-section::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="rgba(255,255,255,0.1)" d="M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,122.7C672,117,768,139,864,138.7C960,139,1056,117,1152,112C1248,107,1344,117,1392,122.7L1440,128L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>') no-repeat bottom;
-            background-size: cover;
-            opacity: 0.3;
-        }
-        
-        .hero-content {
-            position: relative;
-            z-index: 2;
-        }
-        
-        .feature-card {
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            height: 100%;
-            border-radius: 15px;
-            overflow: hidden;
-            background: white;
-        }
-        
-        .feature-card:hover {
-            transform: translateY(-15px) scale(1.02);
-            box-shadow: 0 20px 40px rgba(102, 126, 234, 0.25) !important;
-        }
-        
-        .feature-card .card-body {
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .feature-card::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(102, 126, 234, 0.1), transparent);
-            transition: left 0.6s ease;
-        }
-        
-        .feature-card:hover::after {
-            left: 100%;
-        }
-        
-        .icon-wrapper {
-            width: 90px;
-            height: 90px;
-            border-radius: 20px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 25px;
-            position: relative;
-            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
-            transition: all 0.3s ease;
-        }
-        
-        .feature-card:hover .icon-wrapper {
-            transform: rotateY(360deg);
-            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.5);
-        }
-        
-        .icon-wrapper::before {
-            content: '';
-            position: absolute;
-            inset: -3px;
-            border-radius: 20px;
-            background: linear-gradient(135deg, var(--accent-color), var(--primary-color));
-            z-index: -1;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-        
-        .feature-card:hover .icon-wrapper::before {
-            opacity: 1;
-        }
-        
-        .navbar {
-            backdrop-filter: blur(10px);
-            background-color: rgba(255, 255, 255, 0.95) !important;
-            transition: all 0.3s ease;
-        }
-        
-        .navbar.scrolled {
-            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
-        }
-        
-        .navbar-brand {
-            font-weight: 700;
-            font-size: 1.6rem;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-        
-        .btn-gradient {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border: none;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .btn-gradient::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
-            transition: left 0.5s ease;
-        }
-        
-        .btn-gradient:hover::before {
-            left: 100%;
-        }
-        
-        .btn-gradient:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
-        }
-        
-        .section-title {
-            position: relative;
-            display: inline-block;
-            padding-bottom: 15px;
-        }
-        
-        .section-title::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 80px;
-            height: 4px;
-            background: linear-gradient(90deg, #667eea, #764ba2);
-            border-radius: 2px;
-        }
-        
-        .api-card {
-            border-radius: 15px;
-            transition: all 0.3s ease;
-        }
-        
-        .api-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
-        }
-        
-        .list-check li {
-            position: relative;
-            padding-left: 30px;
-            margin-bottom: 12px;
-        }
-        
-        .list-check li i {
-            position: absolute;
-            left: 0;
-            top: 3px;
-        }
-        
-        footer {
-            background: linear-gradient(135deg, #1e1e2f 0%, #2d2d44 100%);
-        }
-        
-        footer a {
-            transition: all 0.3s ease;
-            text-decoration: none;
-        }
-        
-        footer a:hover {
-            color: var(--accent-color) !important;
-            padding-left: 10px;
-        }
-        
-        .pulse-animation {
-            animation: pulse 2s infinite;
-        }
-        
-        @keyframes pulse {
-            0%, 100% {
-                opacity: 1;
-            }
-            50% {
-                opacity: 0.7;
-            }
-        }
-        
-        .fade-in-up {
-            animation: fadeInUp 0.8s ease-out;
-        }
-        
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        
-        /* Smooth scroll */
-        html {
-            scroll-behavior: smooth;
-        }
-        
-        /* Custom scrollbar */
-        ::-webkit-scrollbar {
-            width: 10px;
-        }
-        
-        ::-webkit-scrollbar-track {
-            background: #f1f1f1;
-        }
-        
-        ::-webkit-scrollbar-thumb {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            border-radius: 5px;
-        }
-        
-        ::-webkit-scrollbar-thumb:hover {
-            background: linear-gradient(135deg, #764ba2, #667eea);
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ResTrack — Gestion de Résidence Étudiante</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+
+  <style>
+    :root {
+      --brand: #1E1248;
+      --brand-light: #2D1B6E;
+      --brand-mid: #3A2490;
+      --brand-accent: #EDEAFF;
+    }
+    * { font-family: 'Poppins', sans-serif; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { background: #fff; color: #0a0a0a; overflow-x: hidden; }
+
+    /* ── Curseur custom ── */
+    .cursor-ring {
+      width: 34px; height: 34px;
+      border: 1.5px solid var(--brand);
+      border-radius: 50%;
+      position: fixed; pointer-events: none; z-index: 9999;
+      transform: translate(-50%,-50%);
+      transition: transform .15s ease;
+    }
+    .cursor-dot {
+      width: 6px; height: 6px;
+      background: var(--brand);
+      border-radius: 50%;
+      position: fixed; pointer-events: none; z-index: 10000;
+      transform: translate(-50%,-50%);
+    }
+
+    /* ── Scrollbar ── */
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: #f5f5f5; }
+    ::-webkit-scrollbar-thumb { background: var(--brand); border-radius: 99px; }
+
+    /* ══════════════════════════
+       KEYFRAMES
+    ══════════════════════════ */
+
+    @keyframes floatY {
+      0%,100% { transform: translateY(0px); }
+      50%      { transform: translateY(-10px); }
+    }
+    .anim-float { animation: floatY 4s ease-in-out infinite; }
+
+    @keyframes meshShift {
+      0%   { background-position: 0% 50%; }
+      50%  { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    .hero-mesh {
+      background: linear-gradient(135deg, #f0edfb 0%, #ede9ff 25%, #f8f6ff 55%, #e9e4ff 100%);
+      background-size: 300% 300%;
+      animation: meshShift 12s ease infinite;
+    }
+
+    /* Orbit */
+    @keyframes orbit1 { from{transform:rotate(0deg) translateX(110px) rotate(0deg);} to{transform:rotate(360deg) translateX(110px) rotate(-360deg);} }
+    @keyframes orbit2 { from{transform:rotate(130deg) translateX(165px) rotate(-130deg);} to{transform:rotate(490deg) translateX(165px) rotate(-490deg);} }
+    @keyframes orbit3 { from{transform:rotate(250deg) translateX(215px) rotate(-250deg);} to{transform:rotate(610deg) translateX(215px) rotate(-610deg);} }
+
+    .orb-dot { position:absolute; top:50%; left:50%; border-radius:50%; margin:-4px; width:8px; height:8px; }
+    .orb-dot:nth-child(1) { background:var(--brand);  animation: orbit1  7s linear infinite; }
+    .orb-dot:nth-child(2) { background:#7C5CE4;        animation: orbit2 11s linear infinite; }
+    .orb-dot:nth-child(3) { background:#C4B5FD;        animation: orbit3 15s linear infinite; }
+
+    /* Blob morphing */
+    @keyframes blobMorph {
+      0%,100% { border-radius:60% 40% 70% 30%/50% 60% 40% 70%; transform:rotate(0deg); }
+      33%      { border-radius:40% 60% 30% 70%/70% 30% 60% 40%; transform:rotate(120deg); }
+      66%      { border-radius:70% 30% 50% 50%/40% 70% 30% 60%; transform:rotate(240deg); }
+    }
+    .blob { position:absolute; background:radial-gradient(circle, rgba(30,18,72,.1) 0%, transparent 70%); animation:blobMorph 14s ease-in-out infinite; }
+
+    /* Shimmer stat */
+    @keyframes shimmer { 0%{background-position:-200% center;} 100%{background-position:200% center;} }
+    .stat-num {
+      background: linear-gradient(90deg, var(--brand) 30%, #7C5CE4 50%, var(--brand) 70%);
+      background-size: 200% auto;
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+      animation: shimmer 3s linear infinite;
+    }
+
+    /* Reveal */
+    .reveal       { opacity:0; transform:translateY(38px);  transition:opacity .7s ease,transform .7s ease; }
+    .reveal-left  { opacity:0; transform:translateX(-38px); transition:opacity .7s ease,transform .7s ease; }
+    .reveal-right { opacity:0; transform:translateX(38px);  transition:opacity .7s ease,transform .7s ease; }
+    .reveal.on, .reveal-left.on, .reveal-right.on { opacity:1; transform:translate(0); }
+
+    .stagger>*:nth-child(1){transition-delay:.05s;}
+    .stagger>*:nth-child(2){transition-delay:.15s;}
+    .stagger>*:nth-child(3){transition-delay:.25s;}
+    .stagger>*:nth-child(4){transition-delay:.35s;}
+    .stagger>*:nth-child(5){transition-delay:.45s;}
+    .stagger>*:nth-child(6){transition-delay:.55s;}
+
+    /* Navbar */
+    #navbar { transition:background .35s,border-color .35s; }
+    #navbar.scrolled { background:rgba(255,255,255,.97); border-bottom-color:#ece9f7; }
+
+    /* Feature card */
+    .feat-card {
+      border:1px solid #ece9f7;
+      transition:border-color .3s,transform .35s cubic-bezier(.34,1.4,.64,1);
+      position:relative; overflow:hidden;
+    }
+    .feat-card::before {
+      content:''; position:absolute; top:0; left:-100%; width:100%; height:100%;
+      background:linear-gradient(90deg,transparent,rgba(30,18,72,.04),transparent);
+      transition:left .55s ease;
+    }
+    .feat-card:hover::before { left:100%; }
+    .feat-card:hover { border-color:var(--brand); transform:translateY(-8px); }
+
+    .icon-box {
+      width:50px; height:50px; border-radius:14px;
+      background:var(--brand-accent);
+      display:flex; align-items:center; justify-content:center;
+      transition:background .3s, transform .4s cubic-bezier(.34,1.56,.64,1);
+    }
+    .feat-card:hover .icon-box { background:var(--brand); transform:rotate(8deg) scale(1.1); }
+    .feat-card:hover .icon-box i { color:#fff !important; }
+
+    /* Buttons */
+    .btn-brand { background:var(--brand); transition:background .25s,transform .2s; }
+    .btn-brand:hover { background:var(--brand-light); transform:translateY(-2px); }
+
+    .btn-ghost { border:1.5px solid var(--brand); transition:background .25s,color .25s,transform .2s; }
+    .btn-ghost:hover { background:var(--brand); color:#fff!important; transform:translateY(-2px); }
+
+    /* Section accent line */
+    .s-line { display:inline-block; width:38px; height:3px; background:var(--brand); border-radius:99px; margin-bottom:.9rem; }
+
+    /* Marquee */
+    @keyframes marquee { from{transform:translateX(0);} to{transform:translateX(-50%);} }
+    .marquee-inner { animation:marquee 20s linear infinite; }
+    .marquee-track:hover .marquee-inner { animation-play-state:paused; }
+
+    .tech-pill {
+      border:1px solid #ece9f7;
+      transition:border-color .25s,background .25s,transform .2s;
+    }
+    .tech-pill:hover { border-color:var(--brand); background:var(--brand-accent); transform:translateY(-3px); }
+
+    /* Blink cursor */
+    @keyframes blink { 0%,100%{opacity:1;} 50%{opacity:0;} }
+    .blink { animation:blink 1s step-end infinite; }
+
+    /* Pulse ring */
+    @keyframes pulseRing { 0%{transform:scale(1);opacity:.5;} 100%{transform:scale(2.4);opacity:0;} }
+    .pulse-ring { position:absolute; inset:0; border-radius:50%; border:1.5px solid var(--brand); animation:pulseRing 2.2s ease-out infinite; }
+
+    /* CTA */
+    .cta-bg { background:var(--brand); position:relative; overflow:hidden; }
+    .cta-bg::before {
+      content:''; position:absolute; top:-60%; right:-20%;
+      width:500px; height:500px; border-radius:50%; background:rgba(255,255,255,.04);
+    }
+    .cta-bg::after {
+      content:''; position:absolute; bottom:-40%; left:-10%;
+      width:350px; height:350px; border-radius:50%; background:rgba(255,255,255,.04);
+    }
+
+    /* Progress bar */
+    @keyframes progFill { from{width:0;} to{width:var(--w);} }
+    .prog-bar { height:3px; background:var(--brand); border-radius:99px; animation:progFill 1.4s ease both; }
+
+    /* Hero grid overlay */
+    .hero-grid {
+      background-image:
+        linear-gradient(rgba(30,18,72,.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(30,18,72,.05) 1px, transparent 1px);
+      background-size:50px 50px;
+    }
+
+    /* Scroll indicator */
+    @keyframes scrollDrop { 0%,100%{transform:translateY(-100%);} 50%{transform:translateY(100%);} }
+    .scroll-line { animation:scrollDrop 1.6s ease-in-out infinite; }
+
+    /* Nav hover underline */
+    .nav-lnk { position:relative; }
+    .nav-lnk::after {
+      content:''; position:absolute; bottom:-3px; left:0; right:0;
+      height:2px; background:var(--brand); border-radius:99px;
+      transform:scaleX(0); transform-origin:left; transition:transform .3s ease;
+    }
+    .nav-lnk:hover::after { transform:scaleX(1); }
+
+    /* Footer links */
+    footer a { transition:color .2s,padding-left .2s; }
+    footer a:hover { color:#fff; padding-left:4px; }
+  </style>
 </head>
 <body>
-    <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-light bg-white fixed-top" id="mainNavbar">
-        <div class="container">
-            <a class="navbar-brand" href="#">
-                <i class="fas fa-building me-2"></i>ResTrack
-            </a>
-            <button 
-                class="navbar-toggler" 
-                type="button" 
-                data-mdb-toggle="collapse" 
-                data-mdb-target="#navbarNav"
-                aria-controls="navbarNav"
-                aria-expanded="false"
-                aria-label="Toggle navigation">
-                <i class="fas fa-bars"></i>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto align-items-center">
-                    <li class="nav-item">
-                        <a class="nav-link fw-bold" href="#features">Fonctionnalités</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link fw-bold" href="#api">API</a>
-                    </li>
-                    <li class="nav-item ms-lg-3">
-                        <a class="nav-link btn btn-gradient text-white px-4 py-2" href="/docs">
-                            <i class="fas fa-book me-2"></i>Documentation
-                        </a>
-                    </li>
-                </ul>
-            </div>
+
+  <div class="cursor-ring" id="cursorRing"></div>
+  <div class="cursor-dot"  id="cursorDot"></div>
+
+  <!-- ══════════════════════════════
+       NAVBAR
+  ══════════════════════════════ -->
+  <nav id="navbar" class="fixed top-0 left-0 right-0 z-50 border-b border-transparent bg-white/70 backdrop-blur-xl">
+    <div class="max-w-6xl mx-auto px-6 flex items-center justify-between h-16">
+
+      <a href="#" class="flex items-center gap-2.5 font-bold text-xl tracking-tight">
+        <span class="relative w-9 h-9 rounded-xl flex items-center justify-center overflow-hidden" style="background:var(--brand);">
+          <span class="pulse-ring" style="animation-duration:2.2s;"></span>
+          <i class="fas fa-building text-white text-xs relative z-10"></i>
+        </span>
+        Res<span style="color:var(--brand)">Track</span>
+      </a>
+
+      <ul class="hidden md:flex items-center gap-8 text-sm font-medium text-gray-500">
+        <li><a href="#features" class="nav-lnk hover:text-[#1E1248] transition-colors">Fonctionnalités</a></li>
+        <li><a href="#api"      class="nav-lnk hover:text-[#1E1248] transition-colors">API</a></li>
+        <li><a href="#tech"     class="nav-lnk hover:text-[#1E1248] transition-colors">Technologies</a></li>
+      </ul>
+
+      <a href="/docs" class="hidden md:inline-flex items-center gap-2 btn-brand text-white text-sm font-semibold px-5 py-2.5 rounded-xl">
+        <i class="fas fa-book text-xs"></i> Documentation
+      </a>
+
+      <button id="burgerBtn" class="md:hidden flex flex-col gap-1.5 p-2">
+        <span class="w-5 h-0.5 bg-gray-800 transition-all" id="b1"></span>
+        <span class="w-5 h-0.5 bg-gray-800 transition-all" id="b2"></span>
+        <span class="w-5 h-0.5 bg-gray-800 transition-all" id="b3"></span>
+      </button>
+    </div>
+
+    <div id="mobileMenu" class="md:hidden hidden border-t border-gray-100 bg-white px-6 py-4 flex flex-col gap-4 text-sm font-medium">
+      <a href="#features" class="hover:text-[#1E1248] transition-colors">Fonctionnalités</a>
+      <a href="#api"      class="hover:text-[#1E1248] transition-colors">API</a>
+      <a href="#tech"     class="hover:text-[#1E1248] transition-colors">Technologies</a>
+      <a href="/docs"     class="btn-brand text-white text-sm font-semibold px-5 py-2.5 rounded-xl text-center">Documentation</a>
+    </div>
+  </nav>
+
+  <!-- ══════════════════════════════
+       HERO
+  ══════════════════════════════ -->
+  <section class="relative min-h-screen flex items-center justify-center pt-20 pb-16 overflow-hidden hero-mesh hero-grid">
+
+    <!-- Blobs -->
+    <div class="blob" style="width:520px;height:520px;top:-120px;right:-100px;opacity:.55;border-radius:60% 40% 70% 30%/50% 60% 40% 70%;"></div>
+    <div class="blob" style="width:380px;height:380px;bottom:-90px;left:-90px;opacity:.45;border-radius:40% 60% 30% 70%/70% 30% 60% 40%;animation-delay:5s;"></div>
+
+    <!-- Orbit system -->
+    <div class="absolute top-1/2 left-1/2 pointer-events-none" style="width:1px;height:1px;">
+      <div style="position:absolute;top:50%;left:50%;width:220px;height:220px;transform:translate(-50%,-50%);border-radius:50%;border:1px dashed rgba(30,18,72,.1);"></div>
+      <div style="position:absolute;top:50%;left:50%;width:330px;height:330px;transform:translate(-50%,-50%);border-radius:50%;border:1px dashed rgba(30,18,72,.07);"></div>
+      <div style="position:absolute;top:50%;left:50%;width:430px;height:430px;transform:translate(-50%,-50%);border-radius:50%;border:1px dashed rgba(30,18,72,.04);"></div>
+      <div class="orb-dot"></div>
+      <div class="orb-dot"></div>
+      <div class="orb-dot"></div>
+    </div>
+
+    <!-- Tiny scattered dots -->
+    <div style="position:absolute;top:22%;left:9%;width:6px;height:6px;border-radius:50%;background:var(--brand);opacity:.2;"></div>
+    <div style="position:absolute;top:68%;right:11%;width:4px;height:4px;border-radius:50%;background:#7C5CE4;opacity:.3;"></div>
+    <div style="position:absolute;top:38%;right:7%;width:3px;height:3px;border-radius:50%;background:var(--brand);opacity:.18;"></div>
+    <div style="position:absolute;bottom:22%;left:18%;width:5px;height:5px;border-radius:50%;background:#7C5CE4;opacity:.25;"></div>
+
+    <!-- Content -->
+    <div class="relative z-10 max-w-4xl mx-auto px-6 text-center">
+
+      <!-- Badge -->
+      <div class="anim-float inline-flex items-center gap-2.5 border text-xs font-semibold px-4 py-2 rounded-full mb-9"
+           style="background:rgba(30,18,72,.06);border-color:rgba(30,18,72,.14);color:var(--brand);">
+        <span class="relative flex h-2 w-2">
+          <span class="absolute inline-flex h-full w-full rounded-full animate-ping opacity-75" style="background:var(--brand);"></span>
+          <span class="relative inline-flex rounded-full h-2 w-2" style="background:var(--brand);"></span>
+        </span>
+        Plateforme de gestion résidentielle moderne
+      </div>
+
+      <!-- Headline -->
+      <h1 class="text-5xl md:text-[70px] font-black leading-[1.04] tracking-tight mb-6">
+        <span class="reveal on block">Gérez votre résidence</span>
+        <span class="reveal on block" style="transition-delay:.12s;color:var(--brand);">
+          intelligemment<span class="blink">.</span>
+        </span>
+      </h1>
+
+      <p class="reveal on text-gray-400 text-lg md:text-xl font-light max-w-lg mx-auto mb-10"
+         style="transition-delay:.25s;">
+        Sorties, messagerie, administration et bien plus — tout ce dont une résidence étudiante a besoin, en un seul endroit.
+      </p>
+
+      <div class="reveal on flex flex-wrap justify-center gap-4 mb-14" style="transition-delay:.38s;">
+        <a href="/docs" class="btn-brand text-white font-semibold px-8 py-4 rounded-xl flex items-center gap-2.5 text-sm">
+          <i class="fas fa-rocket text-xs"></i> Commencer maintenant
+        </a>
+        <a href="#features" class="btn-ghost font-semibold px-8 py-4 rounded-xl flex items-center gap-2.5 text-sm" style="color:var(--brand);">
+          Voir les fonctionnalités <i class="fas fa-arrow-down text-xs"></i>
+        </a>
+      </div>
+
+      <!-- Stats -->
+      <div class="reveal on inline-grid grid-cols-4 gap-px overflow-hidden rounded-2xl border" style="transition-delay:.5s;border-color:#ece9f7;">
+        <div class="bg-white px-6 py-5 text-center">
+          <p class="text-2xl font-black stat-num">6+</p>
+          <p class="text-[10px] text-gray-400 font-medium mt-0.5 uppercase tracking-wider">Modules</p>
         </div>
-    </nav>
-
-    <!-- Hero Section -->
-    <section class="hero-section text-center">
-        <div class="container hero-content">
-            <div class="fade-in-up">
-                <div class="mb-4">
-                    <i class="fas fa-university fa-5x pulse-animation"></i>
-                </div>
-                <h1 class="display-2 fw-bold mb-4">
-                    ResTrack
-                </h1>
-                <p class="lead fs-3 mb-5 opacity-90">
-                    Système de gestion moderne et innovant pour résidences étudiantes
-                </p>
-                <div class="d-flex gap-3 justify-content-center flex-wrap">
-                    <a href="/docs" class="btn btn-light btn-lg shadow">
-                        <i class="fas fa-rocket me-2"></i>Commencer maintenant
-                    </a>
-                    <a href="#features" class="btn btn-outline-light btn-lg">
-                        <i class="fas fa-arrow-down me-2"></i>Découvrir plus
-                    </a>
-                </div>
-            </div>
+        <div class="bg-white px-6 py-5 text-center">
+          <p class="text-2xl font-black stat-num">REST</p>
+          <p class="text-[10px] text-gray-400 font-medium mt-0.5 uppercase tracking-wider">API</p>
         </div>
-    </section>
-
-    <!-- Features Section -->
-    <section id="features" class="py-5 my-5">
-        <div class="container">
-            <div class="text-center mb-5">
-                <h2 class="section-title fw-bold display-5 mb-4">
-                    Fonctionnalités Principales
-                </h2>
-                <p class="text-muted fs-5">Des outils puissants pour une gestion optimale</p>
-            </div>
-            
-            <div class="row g-4">
-                <!-- Gestion des Sorties -->
-                <div class="col-md-6 col-lg-4">
-                    <div class="card feature-card shadow-3 border-0">
-                        <div class="card-body text-center p-4">
-                            <div class="icon-wrapper">
-                                <i class="fas fa-door-open text-white fa-3x"></i>
-                            </div>
-                            <h4 class="fw-bold mb-3 text-primary">Gestion des Sorties</h4>
-                            <p class="text-muted mb-4">
-                                Déclarez et suivez vos sorties en temps réel avec approbation automatique des administrateurs.
-                            </p>
-                            <ul class="list-unstyled list-check text-start">
-                                <li><i class="fas fa-check-circle text-success"></i>Déclaration en ligne rapide</li>
-                                <li><i class="fas fa-check-circle text-success"></i>Suivi en temps réel</li>
-                                <li><i class="fas fa-check-circle text-success"></i>Notifications automatiques</li>
-                                <li><i class="fas fa-check-circle text-success"></i>Historique complet</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Messagerie en Temps Réel -->
-                <div class="col-md-6 col-lg-4">
-                    <div class="card feature-card shadow-3 border-0">
-                        <div class="card-body text-center p-4">
-                            <div class="icon-wrapper">
-                                <i class="fas fa-comments text-white fa-3x"></i>
-                            </div>
-                            <h4 class="fw-bold mb-3 text-primary">Messagerie Instantanée</h4>
-                            <p class="text-muted mb-4">
-                                Chat en temps réel avec WebSocket pour une communication instantanée et fluide.
-                            </p>
-                            <ul class="list-unstyled list-check text-start">
-                                <li><i class="fas fa-check-circle text-success"></i>Messages instantanés</li>
-                                <li><i class="fas fa-check-circle text-success"></i>Groupes de discussion</li>
-                                <li><i class="fas fa-check-circle text-success"></i>Statut en ligne/hors ligne</li>
-                                <li><i class="fas fa-check-circle text-success"></i>Partage de fichiers</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Système d'Amis -->
-                <div class="col-md-6 col-lg-4">
-                    <div class="card feature-card shadow-3 border-0">
-                        <div class="card-body text-center p-4">
-                            <div class="icon-wrapper">
-                                <i class="fas fa-users text-white fa-3x"></i>
-                            </div>
-                            <h4 class="fw-bold mb-3 text-primary">Réseau Social</h4>
-                            <p class="text-muted mb-4">
-                                Créez votre réseau d'amis et restez connecté avec toute la communauté étudiante.
-                            </p>
-                            <ul class="list-unstyled list-check text-start">
-                                <li><i class="fas fa-check-circle text-success"></i>Demandes d'amis</li>
-                                <li><i class="fas fa-check-circle text-success"></i>Recherche avancée</li>
-                                <li><i class="fas fa-check-circle text-success"></i>Profils détaillés</li>
-                                <li><i class="fas fa-check-circle text-success"></i>Suggestions automatiques</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Dashboard Administrateur -->
-                <div class="col-md-6 col-lg-4">
-                    <div class="card feature-card shadow-3 border-0">
-                        <div class="card-body text-center p-4">
-                            <div class="icon-wrapper">
-                                <i class="fas fa-chart-line text-white fa-3x"></i>
-                            </div>
-                            <h4 class="fw-bold mb-3 text-primary">Dashboard Admin</h4>
-                            <p class="text-muted mb-4">
-                                Tableaux de bord et statistiques détaillées pour une gestion optimale de la résidence.
-                            </p>
-                            <ul class="list-unstyled list-check text-start">
-                                <li><i class="fas fa-check-circle text-success"></i>Statistiques en temps réel</li>
-                                <li><i class="fas fa-check-circle text-success"></i>Gestion des étudiants</li>
-                                <li><i class="fas fa-check-circle text-success"></i>Alertes intelligentes</li>
-                                <li><i class="fas fa-check-circle text-success"></i>Rapports automatiques</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Notifications -->
-                <div class="col-md-6 col-lg-4">
-                    <div class="card feature-card shadow-3 border-0">
-                        <div class="card-body text-center p-4">
-                            <div class="icon-wrapper">
-                                <i class="fas fa-bell text-white fa-3x"></i>
-                            </div>
-                            <h4 class="fw-bold mb-3 text-primary">Notifications Push</h4>
-                            <p class="text-muted mb-4">
-                                Recevez des notifications push en temps réel pour ne jamais manquer une information importante.
-                            </p>
-                            <ul class="list-unstyled list-check text-start">
-                                <li><i class="fas fa-check-circle text-success"></i>Notifications push</li>
-                                <li><i class="fas fa-check-circle text-success"></i>Alertes d'urgence</li>
-                                <li><i class="fas fa-check-circle text-success"></i>Centre de notifications</li>
-                                <li><i class="fas fa-check-circle text-success"></i>Personnalisables</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Gestion de Profil -->
-                <div class="col-md-6 col-lg-4">
-                    <div class="card feature-card shadow-3 border-0">
-                        <div class="card-body text-center p-4">
-                            <div class="icon-wrapper">
-                                <i class="fas fa-user-circle text-white fa-3x"></i>
-                            </div>
-                            <h4 class="fw-bold mb-3 text-primary">Profil Étudiant</h4>
-                            <p class="text-muted mb-4">
-                                Gérez facilement votre profil, votre chambre et toutes vos informations personnelles.
-                            </p>
-                            <ul class="list-unstyled list-check text-start">
-                                <li><i class="fas fa-check-circle text-success"></i>Édition simplifiée</li>
-                                <li><i class="fas fa-check-circle text-success"></i>Photo de profil</li>
-                                <li><i class="fas fa-check-circle text-success"></i>Infos académiques</li>
-                                <li><i class="fas fa-check-circle text-success"></i>Sécurité renforcée</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </div>
+        <div class="bg-white px-6 py-5 text-center">
+          <p class="text-2xl font-black stat-num">WS</p>
+          <p class="text-[10px] text-gray-400 font-medium mt-0.5 uppercase tracking-wider">Temps réel</p>
         </div>
-    </section>
-
-    <!-- API Section -->
-    <section id="api" class="py-5 bg-light">
-        <div class="container">
-            <div class="text-center mb-5">
-                <h2 class="section-title fw-bold display-5 mb-4">
-                    Documentation API
-                </h2>
-                <p class="text-muted fs-5">API REST moderne et WebSocket en temps réel</p>
-            </div>
-            
-            <div class="row g-4">
-                <div class="col-md-6">
-                    <div class="card api-card border-0 shadow-3 h-100">
-                        <div class="card-body p-5">
-                            <div class="mb-4">
-                                <div class="d-inline-block p-3 bg-primary bg-opacity-10 rounded-3">
-                                    <i class="fas fa-rocket text-primary fa-3x"></i>
-                                </div>
-                            </div>
-                            <h4 class="fw-bold mb-3">
-                                API REST Sécurisée
-                            </h4>
-                            <p class="text-muted mb-4">
-                                Accédez à toutes les fonctionnalités via notre API REST moderne et sécurisée avec documentation interactive.
-                            </p>
-                            <ul class="list-unstyled list-check mb-4">
-                                <li>
-                                    <i class="fas fa-shield-alt text-primary"></i>
-                                    Authentification JWT sécurisée
-                                </li>
-                                <li>
-                                    <i class="fas fa-file-code text-primary"></i>
-                                    Documentation Swagger interactive
-                                </li>
-                                <li>
-                                    <i class="fas fa-check-double text-primary"></i>
-                                    Validation automatique des données
-                                </li>
-                                <li>
-                                    <i class="fas fa-layer-group text-primary"></i>
-                                    Architecture RESTful
-                                </li>
-                            </ul>
-                            <a href="/docs" class="btn btn-gradient text-white btn-lg">
-                                <i class="fas fa-external-link-alt me-2"></i>Accéder à Swagger
-                            </a>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-md-6">
-                    <div class="card api-card border-0 shadow-3 h-100">
-                        <div class="card-body p-5">
-                            <div class="mb-4">
-                                <div class="d-inline-block p-3 bg-success bg-opacity-10 rounded-3">
-                                    <i class="fas fa-plug text-success fa-3x"></i>
-                                </div>
-                            </div>
-                            <h4 class="fw-bold mb-3">
-                                WebSocket Real-Time
-                            </h4>
-                            <p class="text-muted mb-4">
-                                Communication bidirectionnelle en temps réel avec support WebSocket pour une expérience utilisateur optimale.
-                            </p>
-                            <ul class="list-unstyled list-check mb-4">
-                                <li>
-                                    <i class="fas fa-comments text-success"></i>
-                                    Chat instantané en temps réel
-                                </li>
-                                <li>
-                                    <i class="fas fa-bell text-success"></i>
-                                    Notifications push instantanées
-                                </li>
-                                <li>
-                                    <i class="fas fa-circle text-success"></i>
-                                    Statut en ligne/hors ligne
-                                </li>
-                                <li>
-                                    <i class="fas fa-sync-alt text-success"></i>
-                                    Synchronisation automatique
-                                </li>
-                            </ul>
-                            <a href="/health" class="btn btn-outline-success btn-lg">
-                                <i class="fas fa-heartbeat me-2"></i>Health Check API
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Technologies Section -->
-            <div class="row mt-5">
-                <div class="col-12">
-                    <div class="card border-0 shadow-3">
-                        <div class="card-body p-5 text-center">
-                            <h4 class="fw-bold mb-4">Technologies Utilisées</h4>
-                            <div class="d-flex flex-wrap justify-content-center gap-4">
-                                <div class="tech-badge">
-                                    <i class="fab fa-node-js fa-3x text-success mb-2"></i>
-                                    <p class="mb-0 fw-bold">Node.js</p>
-                                </div>
-                                <div class="tech-badge">
-                                    <i class="fas fa-code fa-3x text-primary mb-2"></i>
-                                    <p class="mb-0 fw-bold">TypeScript</p>
-                                </div>
-                                <div class="tech-badge">
-                                    <i class="fas fa-database fa-3x text-info mb-2"></i>
-                                    <p class="mb-0 fw-bold">PostgreSQL</p>
-                                </div>
-                                <div class="tech-badge">
-                                    <i class="fas fa-cube fa-3x text-danger mb-2"></i>
-                                    <p class="mb-0 fw-bold">NestJS</p>
-                                </div>
-                                <div class="tech-badge">
-                                    <i class="fas fa-network-wired fa-3x text-warning mb-2"></i>
-                                    <p class="mb-0 fw-bold">WebSocket</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+        <div class="bg-white px-6 py-5 text-center">
+          <p class="text-2xl font-black stat-num">JWT</p>
+          <p class="text-[10px] text-gray-400 font-medium mt-0.5 uppercase tracking-wider">Auth</p>
         </div>
-    </section>
+      </div>
+    </div>
 
-    <!-- Footer -->
-    <footer class="text-white py-5">
-        <div class="container">
-            <div class="row g-4">
-                <div class="col-md-4">
-                    <h5 class="fw-bold mb-4">
-                        <i class="fas fa-university me-2"></i>ResTrack
-                    </h5>
-                    <p class="opacity-75 mb-3">
-                        Système de gestion moderne et innovant pour résidences étudiantes. Simplifiez la gestion quotidienne avec des outils puissants.
-                    </p>
-                    <div class="d-flex gap-3 mt-4">
-                        <a href="#" class="btn btn-outline-light btn-floating">
-                            <i class="fab fa-facebook-f"></i>
-                        </a>
-                        <a href="#" class="btn btn-outline-light btn-floating">
-                            <i class="fab fa-twitter"></i>
-                        </a>
-                        <a href="#" class="btn btn-outline-light btn-floating">
-                            <i class="fab fa-linkedin-in"></i>
-                        </a>
-                        <a href="#" class="btn btn-outline-light btn-floating">
-                            <i class="fab fa-github"></i>
-                        </a>
-                    </div>
-                </div>
-                
-                <div class="col-md-4">
-                    <h5 class="fw-bold mb-4">Liens Rapides</h5>
-                    <ul class="list-unstyled">
-                        <li class="mb-3">
-                            <a href="#features" class="text-white opacity-75">
-                                <i class="fas fa-chevron-right me-2"></i>Fonctionnalités
-                            </a>
-                        </li>
-                        <li class="mb-3">
-                            <a href="#api" class="text-white opacity-75">
-                                <i class="fas fa-chevron-right me-2"></i>Documentation API
-                            </a>
-                        </li>
-                        <li class="mb-3">
-                            <a href="/docs" class="text-white opacity-75">
-                                <i class="fas fa-chevron-right me-2"></i>Swagger UI
-                            </a>
-                        </li>
-                        <li class="mb-3">
-                            <a href="/health" class="text-white opacity-75">
-                                <i class="fas fa-chevron-right me-2"></i>Health Check
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-                
-                <div class="col-md-4">
-                    <h5 class="fw-bold mb-4">Technologies</h5>
-                    <div class="mb-3">
-                        <p class="mb-2 opacity-75">
-                            <i class="fas fa-code me-2 text-info"></i>
-                            Backend: NestJS + TypeScript
-                        </p>
-                        <p class="mb-2 opacity-75">
-                            <i class="fas fa-database me-2 text-success"></i>
-                            Base de données: PostgreSQL
-                        </p>
-                        <p class="mb-2 opacity-75">
-                            <i class="fas fa-network-wired me-2 text-warning"></i>
-                            Communication: WebSocket
-                        </p>
-                        <p class="mb-2 opacity-75">
-                            <i class="fas fa-shield-alt me-2 text-danger"></i>
-                            Sécurité: JWT Authentication
-                        </p>
-                    </div>
-                </div>
-            </div>
-            
-            <hr class="my-4 opacity-25">
-            
-            <div class="row">
-                <div class="col-md-6 text-center text-md-start">
-                    <p class="mb-0 opacity-75">
-                        <i class="far fa-copyright me-1"></i>
-                        2025 ResTrack. Tous droits réservés.
-                    </p>
-                </div>
-                <div class="col-md-6 text-center text-md-end">
-                    <p class="mb-0 opacity-75">
-                        Développé avec <i class="fas fa-heart text-danger"></i> par l'équipe ResTrack
-                    </p>
-                </div>
-            </div>
+    <!-- Scroll indicator -->
+    <div class="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2">
+      <span class="text-[9px] uppercase tracking-[.25em] text-gray-400">Scroll</span>
+      <div class="w-px h-10 overflow-hidden relative" style="background:rgba(30,18,72,.1);">
+        <div class="w-full h-full scroll-line" style="background:linear-gradient(to bottom,transparent,var(--brand),transparent);"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════
+       FEATURES
+  ══════════════════════════════ -->
+  <section id="features" class="py-28 bg-[#fafaf9]">
+    <div class="max-w-6xl mx-auto px-6">
+
+      <div class="max-w-xl mb-16 reveal">
+        <div class="s-line"></div>
+        <h2 class="text-4xl md:text-5xl font-black tracking-tight mb-4 leading-tight">
+          Fonctionnalités<br/><span style="color:var(--brand)">principales</span>
+        </h2>
+        <p class="text-gray-400 font-light text-sm leading-relaxed">Des outils puissants pour une gestion quotidienne optimale et une expérience étudiante de qualité.</p>
+      </div>
+
+      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-5 stagger">
+
+        <div class="feat-card bg-white rounded-2xl p-7 reveal">
+          <div class="icon-box mb-5"><i class="fas fa-door-open text-lg" style="color:var(--brand);"></i></div>
+          <h3 class="font-bold text-[15px] mb-2">Gestion des Sorties</h3>
+          <p class="text-gray-400 text-xs leading-relaxed mb-5">Déclarez et suivez vos sorties en temps réel avec approbation automatique des administrateurs.</p>
+          <ul class="space-y-2">
+            <li class="flex items-center gap-2 text-xs text-gray-500"><span class="w-1.5 h-1.5 rounded-full flex-shrink-0" style="background:var(--brand);"></span>Déclaration en ligne rapide</li>
+            <li class="flex items-center gap-2 text-xs text-gray-500"><span class="w-1.5 h-1.5 rounded-full flex-shrink-0" style="background:var(--brand);"></span>Suivi en temps réel</li>
+            <li class="flex items-center gap-2 text-xs text-gray-500"><span class="w-1.5 h-1.5 rounded-full flex-shrink-0" style="background:var(--brand);"></span>Notifications automatiques</li>
+            <li class="flex items-center gap-2 text-xs text-gray-500"><span class="w-1.5 h-1.5 rounded-full flex-shrink-0" style="background:var(--brand);"></span>Historique complet</li>
+          </ul>
         </div>
-    </footer>
 
-    <!-- jQuery -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <!-- MDB 5 JavaScript -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/7.1.0/mdb.min.js"></script>
-    
-    <!-- Custom JavaScript -->
-    <script>
-        $(document).ready(function() {
-            // Navbar scroll effect
-            $(window).scroll(function() {
-                if ($(this).scrollTop() > 50) {
-                    $('#mainNavbar').addClass('scrolled');
-                } else {
-                    $('#mainNavbar').removeClass('scrolled');
-                }
-            });
-            
-            // Smooth scroll for anchor links
-            $('a[href^="#"]').on('click', function(event) {
-                var target = $(this.getAttribute('href'));
-                if(target.length) {
-                    event.preventDefault();
-                    $('html, body').stop().animate({
-                        scrollTop: target.offset().top - 80
-                    }, 1000);
-                }
-            });
-            
-            // Animate elements on scroll
-            function animateOnScroll() {
-                $('.feature-card').each(function() {
-                    var elementTop = $(this).offset().top;
-                    var elementBottom = elementTop + $(this).outerHeight();
-                    var viewportTop = $(window).scrollTop();
-                    var viewportBottom = viewportTop + $(window).height();
-                    
-                    if (elementBottom > viewportTop && elementTop < viewportBottom) {
-                        $(this).addClass('fade-in-up');
-                    }
-                });
-            }
-            
-            $(window).on('scroll', animateOnScroll);
-            animateOnScroll(); // Initial check
-            
-            // Add ripple effect to buttons
-            $('.btn').on('click', function(e) {
-                var ripple = $('<span class="ripple"></span>');
-                var x = e.pageX - $(this).offset().left;
-                var y = e.pageY - $(this).offset().top;
-                
-                ripple.css({
-                    left: x,
-                    top: y
-                });
-                
-                $(this).append(ripple);
-                
-                setTimeout(function() {
-                    ripple.remove();
-                }, 600);
-            });
-        });
-    </script>
+        <div class="feat-card bg-white rounded-2xl p-7 reveal">
+          <div class="icon-box mb-5"><i class="fas fa-comments text-lg" style="color:var(--brand);"></i></div>
+          <h3 class="font-bold text-[15px] mb-2">Messagerie Instantanée</h3>
+          <p class="text-gray-400 text-xs leading-relaxed mb-5">Chat en temps réel via WebSocket pour une communication instantanée et fluide entre étudiants.</p>
+          <ul class="space-y-2">
+            <li class="flex items-center gap-2 text-xs text-gray-500"><span class="w-1.5 h-1.5 rounded-full flex-shrink-0" style="background:var(--brand);"></span>Messages instantanés</li>
+            <li class="flex items-center gap-2 text-xs text-gray-500"><span class="w-1.5 h-1.5 rounded-full flex-shrink-0" style="background:var(--brand);"></span>Groupes de discussion</li>
+            <li class="flex items-center gap-2 text-xs text-gray-500"><span class="w-1.5 h-1.5 rounded-full flex-shrink-0" style="background:var(--brand);"></span>Statut en ligne / hors ligne</li>
+            <li class="flex items-center gap-2 text-xs text-gray-500"><span class="w-1.5 h-1.5 rounded-full flex-shrink-0" style="background:var(--brand);"></span>Partage de fichiers</li>
+          </ul>
+        </div>
+
+        <div class="feat-card bg-white rounded-2xl p-7 reveal">
+          <div class="icon-box mb-5"><i class="fas fa-users text-lg" style="color:var(--brand);"></i></div>
+          <h3 class="font-bold text-[15px] mb-2">Réseau Social</h3>
+          <p class="text-gray-400 text-xs leading-relaxed mb-5">Créez votre réseau d'amis et restez connecté avec toute la communauté étudiante.</p>
+          <ul class="space-y-2">
+            <li class="flex items-center gap-2 text-xs text-gray-500"><span class="w-1.5 h-1.5 rounded-full flex-shrink-0" style="background:var(--brand);"></span>Demandes d'amis</li>
+            <li class="flex items-center gap-2 text-xs text-gray-500"><span class="w-1.5 h-1.5 rounded-full flex-shrink-0" style="background:var(--brand);"></span>Recherche avancée</li>
+            <li class="flex items-center gap-2 text-xs text-gray-500"><span class="w-1.5 h-1.5 rounded-full flex-shrink-0" style="background:var(--brand);"></span>Profils détaillés</li>
+            <li class="flex items-center gap-2 text-xs text-gray-500"><span class="w-1.5 h-1.5 rounded-full flex-shrink-0" style="background:var(--brand);"></span>Suggestions automatiques</li>
+          </ul>
+        </div>
+
+        <div class="feat-card bg-white rounded-2xl p-7 reveal">
+          <div class="icon-box mb-5"><i class="fas fa-chart-line text-lg" style="color:var(--brand);"></i></div>
+          <h3 class="font-bold text-[15px] mb-2">Dashboard Admin</h3>
+          <p class="text-gray-400 text-xs leading-relaxed mb-5">Tableaux de bord et statistiques détaillées pour une gestion optimale de la résidence.</p>
+          <ul class="space-y-2">
+            <li class="flex items-center gap-2 text-xs text-gray-500"><span class="w-1.5 h-1.5 rounded-full flex-shrink-0" style="background:var(--brand);"></span>Statistiques en temps réel</li>
+            <li class="flex items-center gap-2 text-xs text-gray-500"><span class="w-1.5 h-1.5 rounded-full flex-shrink-0" style="background:var(--brand);"></span>Gestion des étudiants</li>
+            <li class="flex items-center gap-2 text-xs text-gray-500"><span class="w-1.5 h-1.5 rounded-full flex-shrink-0" style="background:var(--brand);"></span>Alertes intelligentes</li>
+            <li class="flex items-center gap-2 text-xs text-gray-500"><span class="w-1.5 h-1.5 rounded-full flex-shrink-0" style="background:var(--brand);"></span>Rapports automatiques</li>
+          </ul>
+        </div>
+
+        <div class="feat-card bg-white rounded-2xl p-7 reveal">
+          <div class="icon-box mb-5"><i class="fas fa-bell text-lg" style="color:var(--brand);"></i></div>
+          <h3 class="font-bold text-[15px] mb-2">Notifications Push</h3>
+          <p class="text-gray-400 text-xs leading-relaxed mb-5">Ne manquez aucune information importante grâce aux notifications push en temps réel.</p>
+          <ul class="space-y-2">
+            <li class="flex items-center gap-2 text-xs text-gray-500"><span class="w-1.5 h-1.5 rounded-full flex-shrink-0" style="background:var(--brand);"></span>Notifications push</li>
+            <li class="flex items-center gap-2 text-xs text-gray-500"><span class="w-1.5 h-1.5 rounded-full flex-shrink-0" style="background:var(--brand);"></span>Alertes d'urgence</li>
+            <li class="flex items-center gap-2 text-xs text-gray-500"><span class="w-1.5 h-1.5 rounded-full flex-shrink-0" style="background:var(--brand);"></span>Centre de notifications</li>
+            <li class="flex items-center gap-2 text-xs text-gray-500"><span class="w-1.5 h-1.5 rounded-full flex-shrink-0" style="background:var(--brand);"></span>Entièrement personnalisables</li>
+          </ul>
+        </div>
+
+        <div class="feat-card bg-white rounded-2xl p-7 reveal">
+          <div class="icon-box mb-5"><i class="fas fa-user-circle text-lg" style="color:var(--brand);"></i></div>
+          <h3 class="font-bold text-[15px] mb-2">Profil Étudiant</h3>
+          <p class="text-gray-400 text-xs leading-relaxed mb-5">Gérez votre profil, votre chambre et toutes vos informations personnelles facilement.</p>
+          <ul class="space-y-2">
+            <li class="flex items-center gap-2 text-xs text-gray-500"><span class="w-1.5 h-1.5 rounded-full flex-shrink-0" style="background:var(--brand);"></span>Édition simplifiée</li>
+            <li class="flex items-center gap-2 text-xs text-gray-500"><span class="w-1.5 h-1.5 rounded-full flex-shrink-0" style="background:var(--brand);"></span>Photo de profil</li>
+            <li class="flex items-center gap-2 text-xs text-gray-500"><span class="w-1.5 h-1.5 rounded-full flex-shrink-0" style="background:var(--brand);"></span>Infos académiques</li>
+            <li class="flex items-center gap-2 text-xs text-gray-500"><span class="w-1.5 h-1.5 rounded-full flex-shrink-0" style="background:var(--brand);"></span>Sécurité renforcée</li>
+          </ul>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════
+       API
+  ══════════════════════════════ -->
+  <section id="api" class="py-28 bg-white">
+    <div class="max-w-6xl mx-auto px-6">
+
+      <div class="max-w-xl mb-16 reveal">
+        <div class="s-line"></div>
+        <h2 class="text-4xl md:text-5xl font-black tracking-tight mb-4 leading-tight">
+          Documentation<br/><span style="color:var(--brand)">API</span>
+        </h2>
+        <p class="text-gray-400 font-light text-sm leading-relaxed">API REST moderne et WebSocket en temps réel pour des intégrations robustes et scalables.</p>
+      </div>
+
+      <div class="grid md:grid-cols-2 gap-6">
+
+        <!-- REST card -->
+        <div class="api-card border rounded-2xl p-8" style="border-color:#ece9f7;">
+          <div class="icon-box mb-6"><i class="fas fa-rocket" style="color:var(--brand);"></i></div>
+          <h3 class="font-bold text-lg mb-3">API REST Sécurisée</h3>
+          <p class="text-gray-400 text-sm leading-relaxed mb-6">Accédez à toutes les fonctionnalités via une API REST moderne avec documentation Swagger interactive.</p>
+          <div class="space-y-3 mb-7">
+            <div>
+              <div class="flex justify-between text-xs text-gray-500 mb-1.5"><span>Sécurité JWT</span><span>98%</span></div>
+              <div class="h-1.5 bg-gray-100 rounded-full overflow-hidden"><div class="prog-bar" style="--w:98%;"></div></div>
+            </div>
+            <div>
+              <div class="flex justify-between text-xs text-gray-500 mb-1.5"><span>Documentation</span><span>100%</span></div>
+              <div class="h-1.5 bg-gray-100 rounded-full overflow-hidden"><div class="prog-bar" style="--w:100%;animation-delay:.2s;"></div></div>
+            </div>
+            <div>
+              <div class="flex justify-between text-xs text-gray-500 mb-1.5"><span>Validation données</span><span>95%</span></div>
+              <div class="h-1.5 bg-gray-100 rounded-full overflow-hidden"><div class="prog-bar" style="--w:95%;animation-delay:.4s;"></div></div>
+            </div>
+          </div>
+          <ul class="space-y-2.5 mb-8">
+            <li class="flex items-start gap-2.5 text-sm text-gray-600"><i class="fas fa-shield-alt mt-0.5 text-xs flex-shrink-0" style="color:var(--brand);"></i>Authentification JWT sécurisée</li>
+            <li class="flex items-start gap-2.5 text-sm text-gray-600"><i class="fas fa-file-code mt-0.5 text-xs flex-shrink-0" style="color:var(--brand);"></i>Documentation Swagger interactive</li>
+            <li class="flex items-start gap-2.5 text-sm text-gray-600"><i class="fas fa-layer-group mt-0.5 text-xs flex-shrink-0" style="color:var(--brand);"></i>Architecture RESTful</li>
+          </ul>
+          <a href="/docs" class="btn-brand inline-flex items-center gap-2 text-white text-sm font-semibold px-6 py-3 rounded-xl">
+            <i class="fas fa-external-link-alt text-xs"></i> Accéder à Swagger
+          </a>
+        </div>
+
+        <!-- WebSocket card -->
+        <div class="api-card border rounded-2xl p-8" style="border-color:#ece9f7;">
+          <div class="icon-box mb-6"><i class="fas fa-plug" style="color:var(--brand);"></i></div>
+          <h3 class="font-bold text-lg mb-3">WebSocket Real-Time</h3>
+          <p class="text-gray-400 text-sm leading-relaxed mb-6">Communication bidirectionnelle en temps réel avec WebSocket pour une expérience utilisateur optimale.</p>
+
+          <!-- Live mock feed -->
+          <div class="rounded-xl border p-4 mb-7 bg-[#fafaf9]" style="border-color:#ece9f7;">
+            <p class="text-[9px] uppercase tracking-widest text-gray-400 mb-3">⬤ Live events</p>
+            <div id="wsRow0" class="flex items-center gap-2.5 text-xs text-gray-600 transition-all duration-300">
+              <span class="w-2 h-2 rounded-full animate-pulse" style="background:#22c55e;flex-shrink:0;"></span>
+              <span>étudiant <b>Koné A.</b> connecté</span>
+              <span class="ml-auto text-gray-300 text-[10px]">just now</span>
+            </div>
+            <div id="wsRow1" class="flex items-center gap-2.5 text-xs text-gray-600 mt-2 transition-all duration-300">
+              <span class="w-2 h-2 rounded-full" style="background:var(--brand);opacity:.7;flex-shrink:0;"></span>
+              <span>sortie <b>#1042</b> approuvée</span>
+              <span class="ml-auto text-gray-300 text-[10px]">2s ago</span>
+            </div>
+            <div id="wsRow2" class="flex items-center gap-2.5 text-xs text-gray-600 mt-2 transition-all duration-300">
+              <span class="w-2 h-2 rounded-full" style="background:#7C5CE4;opacity:.7;flex-shrink:0;"></span>
+              <span>notification — <b>Chambre 14</b></span>
+              <span class="ml-auto text-gray-300 text-[10px]">5s ago</span>
+            </div>
+          </div>
+
+          <ul class="space-y-2.5 mb-8">
+            <li class="flex items-start gap-2.5 text-sm text-gray-600"><i class="fas fa-comments mt-0.5 text-xs flex-shrink-0" style="color:var(--brand);"></i>Chat instantané en temps réel</li>
+            <li class="flex items-start gap-2.5 text-sm text-gray-600"><i class="fas fa-bell mt-0.5 text-xs flex-shrink-0" style="color:var(--brand);"></i>Notifications push instantanées</li>
+            <li class="flex items-start gap-2.5 text-sm text-gray-600"><i class="fas fa-sync-alt mt-0.5 text-xs flex-shrink-0" style="color:var(--brand);"></i>Synchronisation automatique</li>
+          </ul>
+          <a href="/health" class="btn-ghost inline-flex items-center gap-2 text-sm font-semibold px-6 py-3 rounded-xl" style="color:var(--brand);">
+            <i class="fas fa-heartbeat text-xs"></i> Health Check API
+          </a>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════
+       TECH MARQUEE
+  ══════════════════════════════ -->
+  <section id="tech" class="py-20 border-t overflow-hidden" style="border-color:#f0edf7;">
+    <div class="max-w-6xl mx-auto px-6 mb-10 reveal">
+      <p class="text-[10px] font-semibold uppercase tracking-[.25em] text-gray-400">Stack technologique</p>
+    </div>
+    <div class="marquee-track overflow-hidden">
+      <div class="marquee-inner flex gap-4 whitespace-nowrap" id="marqueeInner"></div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════
+       CTA
+  ══════════════════════════════ -->
+  <section class="cta-bg py-28">
+    <div class="max-w-3xl mx-auto px-6 text-center relative z-10 reveal">
+      <div class="anim-float inline-flex items-center gap-2 border border-white/20 text-white/70 text-xs font-semibold px-4 py-2 rounded-full mb-8">
+        <i class="fas fa-star text-[10px]"></i> Prêt à démarrer ?
+      </div>
+      <h2 class="text-4xl md:text-5xl font-black text-white tracking-tight mb-5 leading-tight">
+        Modernisez votre<br/>résidence aujourd'hui.
+      </h2>
+      <p class="text-white/50 font-light mb-10 text-lg">
+        Déployez ResTrack en quelques minutes et simplifiez la gestion quotidienne de vos étudiants.
+      </p>
+      <div class="flex flex-wrap justify-center gap-4">
+        <a href="/docs"
+           class="bg-white font-bold px-8 py-4 rounded-xl flex items-center gap-2.5 text-sm hover:-translate-y-1 transition-transform"
+           style="color:var(--brand);">
+          <i class="fas fa-rocket text-xs"></i> Commencer maintenant
+        </a>
+        <a href="#features"
+           class="border border-white/30 text-white font-semibold px-8 py-4 rounded-xl flex items-center gap-2.5 text-sm hover:bg-white/10 transition-colors">
+          En savoir plus <i class="fas fa-arrow-right text-xs"></i>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════
+       FOOTER
+  ══════════════════════════════ -->
+  <footer class="bg-[#0a0a0a] text-white py-16">
+    <div class="max-w-6xl mx-auto px-6">
+      <div class="grid md:grid-cols-3 gap-10 mb-12">
+        <div>
+          <a href="#" class="flex items-center gap-2.5 font-bold text-xl mb-4">
+            <span class="w-9 h-9 rounded-xl flex items-center justify-center" style="background:var(--brand);">
+              <i class="fas fa-building text-white text-xs"></i>
+            </span>
+            Res<span style="color:#7C5CE4">Track</span>
+          </a>
+          <p class="text-gray-500 text-sm leading-relaxed mb-6">Système de gestion moderne pour résidences étudiantes. Simplifiez le quotidien avec des outils puissants.</p>
+          <div class="flex gap-3">
+            <a href="#" class="w-8 h-8 border border-gray-800 rounded-lg flex items-center justify-center hover:border-[#1E1248] text-gray-600 text-sm transition-all"><i class="fab fa-github"></i></a>
+            <a href="#" class="w-8 h-8 border border-gray-800 rounded-lg flex items-center justify-center hover:border-[#1E1248] text-gray-600 text-sm transition-all"><i class="fab fa-twitter"></i></a>
+            <a href="#" class="w-8 h-8 border border-gray-800 rounded-lg flex items-center justify-center hover:border-[#1E1248] text-gray-600 text-sm transition-all"><i class="fab fa-linkedin-in"></i></a>
+          </div>
+        </div>
+        <div>
+          <h6 class="text-[10px] font-semibold uppercase tracking-[.2em] text-gray-600 mb-5">Navigation</h6>
+          <ul class="space-y-3 text-sm text-gray-500">
+            <li><a href="#features">Fonctionnalités</a></li>
+            <li><a href="#api">Documentation API</a></li>
+            <li><a href="/docs">Swagger UI</a></li>
+            <li><a href="/health">Health Check</a></li>
+          </ul>
+        </div>
+        <div>
+          <h6 class="text-[10px] font-semibold uppercase tracking-[.2em] text-gray-600 mb-5">Stack</h6>
+          <ul class="space-y-3 text-sm text-gray-500">
+            <li class="flex items-center gap-2"><i class="fas fa-code w-4 text-xs" style="color:var(--brand);"></i> NestJS + TypeScript</li>
+            <li class="flex items-center gap-2"><i class="fas fa-database w-4 text-xs" style="color:var(--brand);"></i> PostgreSQL</li>
+            <li class="flex items-center gap-2"><i class="fas fa-network-wired w-4 text-xs" style="color:var(--brand);"></i> WebSocket</li>
+            <li class="flex items-center gap-2"><i class="fas fa-shield-alt w-4 text-xs" style="color:var(--brand);"></i> JWT Authentication</li>
+          </ul>
+        </div>
+      </div>
+      <div class="border-t border-gray-900 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-gray-700">
+        <p>© 2025 ResTrack. Tous droits réservés.</p>
+        <p>Développé avec <i class="fas fa-heart" style="color:var(--brand);"></i> par l'équipe ResTrack</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ══════════════════════════════
+       JS
+  ══════════════════════════════ -->
+  <script>
+    // ── Curseur ──
+    const ring = document.getElementById('cursorRing');
+    const dot  = document.getElementById('cursorDot');
+    let mx=0,my=0,rx=0,ry=0;
+    document.addEventListener('mousemove', e => {
+      mx = e.clientX; my = e.clientY;
+      dot.style.left = mx+'px'; dot.style.top = my+'px';
+    });
+    (function tick(){ rx+=(mx-rx)*.12; ry+=(my-ry)*.12; ring.style.left=rx+'px'; ring.style.top=ry+'px'; requestAnimationFrame(tick); })();
+    document.querySelectorAll('a,button').forEach(el=>{
+      el.addEventListener('mouseenter',()=>ring.style.transform='translate(-50%,-50%) scale(1.9)');
+      el.addEventListener('mouseleave',()=>ring.style.transform='translate(-50%,-50%) scale(1)');
+    });
+
+    // ── Navbar ──
+    window.addEventListener('scroll',()=> document.getElementById('navbar').classList.toggle('scrolled',scrollY>40));
+
+    // ── Burger ──
+    let menuOpen=false;
+    document.getElementById('burgerBtn').addEventListener('click',()=>{
+      menuOpen=!menuOpen;
+      document.getElementById('mobileMenu').classList.toggle('hidden',!menuOpen);
+      document.getElementById('b1').style.transform = menuOpen?'rotate(45deg) translate(4px,4px)':'';
+      document.getElementById('b2').style.opacity   = menuOpen?'0':'1';
+      document.getElementById('b3').style.transform = menuOpen?'rotate(-45deg) translate(4px,-4px)':'';
+    });
+
+    // ── IntersectionObserver ──
+    const io = new IntersectionObserver(entries=>{
+      entries.forEach(e=>{ if(e.isIntersecting) e.target.classList.add('on'); });
+    },{threshold:.1});
+    document.querySelectorAll('.reveal,.reveal-left,.reveal-right').forEach(el=>io.observe(el));
+
+    // ── API cards hover ──
+    document.querySelectorAll('.api-card').forEach(card=>{
+      card.addEventListener('mouseenter',()=>{ card.style.borderColor='var(--brand)'; card.style.transform='translateY(-6px)'; });
+      card.addEventListener('mouseleave',()=>{ card.style.borderColor='#ece9f7'; card.style.transform='translateY(0)'; });
+      card.style.transition='border-color .3s,transform .35s cubic-bezier(.34,1.4,.64,1)';
+    });
+
+    // ── Marquee ──
+    const techData = [
+      { icon:'fab fa-node-js', color:'#22c55e',    label:'Node.js'     },
+      { icon:'fas fa-code',    color:'var(--brand)',label:'TypeScript'  },
+      { icon:'fas fa-database',color:'#38bdf8',    label:'PostgreSQL'  },
+      { icon:'fas fa-cube',    color:'#ef4444',    label:'NestJS'      },
+      { icon:'fas fa-network-wired',color:'#f59e0b',label:'WebSocket'  },
+      { icon:'fas fa-shield-alt',color:'var(--brand)',label:'JWT Auth' },
+      { icon:'fas fa-file-code',color:'#94a3b8',   label:'Swagger'     },
+      { icon:'fas fa-layer-group',color:'#7C5CE4', label:'TypeORM'     },
+    ];
+    const inner = document.getElementById('marqueeInner');
+    for(let r=0;r<2;r++){
+      const wrap=document.createElement('div');
+      wrap.className='flex gap-4';
+      techData.forEach(t=>{
+        const d=document.createElement('div');
+        d.className='tech-pill inline-flex items-center gap-2.5 bg-white rounded-xl px-5 py-3 text-sm font-semibold text-gray-600';
+        d.innerHTML=`<i class="${t.icon} text-base" style="color:${t.color};"></i> ${t.label}`;
+        wrap.appendChild(d);
+      });
+      inner.appendChild(wrap);
+    }
+
+    // ── Live WS feed ──
+    const wsEvents = [
+      { color:'#22c55e',       msg:"étudiant <b>Traoré M.</b> connecté",   time:'just now' },
+      { color:'var(--brand)',  msg:"sortie <b>#1087</b> en attente",         time:'1s ago'   },
+      { color:'#7C5CE4',       msg:"message reçu — <b>Groupe B</b>",         time:'3s ago'   },
+      { color:'#22c55e',       msg:"profil <b>Diallo K.</b> mis à jour",     time:'just now' },
+      { color:'var(--brand)',  msg:"notification — <b>Chambre 22</b>",       time:'2s ago'   },
+      { color:'#7C5CE4',       msg:"sortie <b>#1091</b> approuvée",          time:'just now' },
+    ];
+    let wsIdx=0;
+    const wsRowIds=['wsRow0','wsRow1','wsRow2'];
+    let wsRowPtr=0;
+    setInterval(()=>{
+      const rowId=wsRowIds[wsRowPtr%3]; wsRowPtr++;
+      const row=document.getElementById(rowId);
+      if(!row) return;
+      const ev=wsEvents[wsIdx++%wsEvents.length];
+      row.style.opacity='0'; row.style.transform='translateX(-10px)';
+      setTimeout(()=>{
+        row.querySelector('span:first-child').style.background=ev.color;
+        row.querySelectorAll('span')[1].innerHTML=ev.msg;
+        row.querySelectorAll('span')[2].textContent=ev.time;
+        row.style.opacity='1'; row.style.transform='translateX(0)';
+      },280);
+    },1800);
+  </script>
+
 </body>
 </html>
