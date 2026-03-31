@@ -6,6 +6,10 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
 import { UserRole } from '../enum/userrole';
 
+type UploadedFilePayload = {
+  filename: string;
+};
+
 @Injectable()
 export class UsersService {
   private readonly logger = new Logger(UsersService.name);
@@ -121,7 +125,7 @@ export class UsersService {
     }
   }
 
-  async uploadProfilePicture(id: number, file: Express.Multer.File): Promise<User> {
+  async uploadProfilePicture(id: number, file: UploadedFilePayload): Promise<User> {
     try {
       if (!id) {
         throw new BadRequestException('User ID is required');

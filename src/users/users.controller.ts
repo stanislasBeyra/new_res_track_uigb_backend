@@ -25,6 +25,10 @@ import { UploadFileDto } from './dto/upload-file.dto';
 import { User } from './entities/user.entity';
 import { UserRole } from '../enum/userrole';
 
+type UploadedFilePayload = {
+  filename: string;
+};
+
 @ApiTags('Users')
 @ApiBearerAuth('JWT-auth')
 @Controller('users')
@@ -125,7 +129,7 @@ export class UsersController {
   @ApiResponse({ status: 400, description: 'Invalid or missing file' })
   async uploadProfilePicture(
     @Param('id', ParseIntPipe) id: number,
-    @UploadedFile() file: Express.Multer.File,
+    @UploadedFile() file: UploadedFilePayload,
   ): Promise<User> {
     return this.usersService.uploadProfilePicture(id, file);
   }
